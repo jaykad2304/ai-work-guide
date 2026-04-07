@@ -4,9 +4,9 @@
 - [x] Tokens & context windows
 - [x] Temperature & dynamic detection (built: dynamic temperature in AgentsJey)
 - [x] System prompts vs user prompts vs few-shot examples
-- [ ] Chain-of-thought (CoT) prompting
-- [ ] Prompt patterns: ReAct, Tree-of-Thought, self-consistency
-- [ ] **Phase 1 Build:** prompt-toolkit in `experiments/`
+- [x] Chain-of-thought (CoT) prompting
+- [x] Prompt patterns: ReAct, Tree-of-Thought, self-consistency
+- [x] **Phase 1 Build:** prompt-toolkit in `experiments/`
 
 ## Phase 2 — Agent Systems
 - [ ] The ReAct loop
