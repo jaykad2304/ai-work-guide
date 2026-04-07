@@ -9,8 +9,8 @@
 - [x] **Phase 1 Build:** prompt-toolkit in `experiments/`
 
 ## Phase 2 — Agent Systems
-- [ ] The ReAct loop
-- [ ] Tool use and function calling
+- [x] The ReAct loop
+- [x] Tool use and function calling
 - [ ] Agent memory: in-context vs external
 - [ ] Multi-agent orchestration
 - [ ] Claude Agent SDK deep dive
