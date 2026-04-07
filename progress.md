@@ -3,7 +3,7 @@
 ## Phase 1 — LLM Mastery
 - [x] Tokens & context windows
 - [x] Temperature & dynamic detection (built: dynamic temperature in AgentsJey)
-- [ ] System prompts vs user prompts vs few-shot examples
+- [x] System prompts vs user prompts vs few-shot examples
 - [ ] Chain-of-thought (CoT) prompting
 - [ ] Prompt patterns: ReAct, Tree-of-Thought, self-consistency
 - [ ] **Phase 1 Build:** prompt-toolkit in `experiments/`
