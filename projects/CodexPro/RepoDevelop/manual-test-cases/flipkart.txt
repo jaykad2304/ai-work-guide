@@ -1,0 +1,33 @@
+Test Case: Flipkart Home Page Loads
+1. Navigate to https://www.flipkart.com
+2. Verify text "Flipkart" is displayed
+3. Verify the "For you" is visible
+
+Test Case: Flipkart Search For Laptops
+1. Navigate to https://www.flipkart.com
+2. Enter "laptops" in the search field
+3. Press Enter
+4. Wait for 2 seconds
+5. Verify page url contains "laptop"
+
+Test Case: Flipkart Search And Hover Product
+1. Navigate to https://www.flipkart.com
+2. Enter "headphones" in the search field
+3. Press Enter
+4. Wait for 2 seconds
+5. Hover to "Offer Zone"
+6. Click on "Offer Zone"
+
+Test Case: Flipkart Filter By Brand
+1. Navigate to https://www.flipkart.com
+3. Enter "mobile phones" in the search field
+4. Press Enter
+5. Wait for 3 seconds
+6. Verify text "mobile" is displayed
+7. Click the "Apple" filter
+
+Test Case: Flipkart Open Login Page
+1. Navigate to https://www.flipkart.com
+2. Click the login button
+3. Verify text "Login" is displayed
+4. Verify the "mobile number" field is visible

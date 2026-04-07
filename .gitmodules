@@ -1,0 +1,3 @@
+[submodule "skills/jey-claude-skills"]
+	path = skills/jey-claude-skills
+	url = https://github.com/jaykad2304/jey-claude-skills.git

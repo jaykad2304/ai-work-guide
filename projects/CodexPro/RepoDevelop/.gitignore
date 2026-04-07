@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+
+# Test results
+test-results/
+playwright-report/
+allure-results/
+allure-report/
+screenshots/
+
+# Generated tests (optional - you may want to commit these)
+# tests/generated/
+
+# Playwright
+playwright/.cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

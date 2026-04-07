@@ -1,0 +1,30 @@
+Test Case: Amazon Home Page Loads
+1. Navigate to https://www.amazon.in
+2. Verify text "Amazon" is displayed
+3. Verify search field is displayed
+
+Test Case: Amazon Search For Laptop
+1. Navigate to https://www.amazon.in
+2. Type "laptop" in search field
+3. Click search button
+4. Verify search results are displayed
+5. Verify text "laptop" is displayed
+
+Test Case: Amazon Search For Headphones
+1. Navigate to https://www.amazon.in
+2. Type "headphones" in search field
+3. Click search button
+4. Verify search results are displayed
+5. Verify text "headphones" is displayed
+
+Test Case: Amazon Search In Books Category
+1. Navigate to https://www.amazon.in
+2. Select "Books" from search dropdown
+3. Type "harry potter" in search field
+4. Click search button
+5. Verify search results are displayed
+
+Test Case: Amazon Open Sign In
+1. Navigate to https://www.amazon.in
+2. Click sign in link
+3. Verify text "Sign in" is displayed

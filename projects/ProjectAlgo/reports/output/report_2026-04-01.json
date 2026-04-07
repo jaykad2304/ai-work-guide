@@ -1,0 +1,715 @@
+{
+  "generated_at": "2026-04-01T19:15:03.342655",
+  "intraday": [
+    {
+      "symbol": "POWERGRID",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 25.0,
+      "entry_price": 293.3,
+      "target": 294.39,
+      "stop_loss": 292.57,
+      "reasons": [
+        "MACD above signal",
+        "Near upper BB (BB%=0.94) [caution]",
+        "Short EMA above medium",
+        "High volume spike (2.2x avg)",
+        "Near support (0.9% above)"
+      ]
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 22.0,
+      "entry_price": 817.3,
+      "target": 820.95,
+      "stop_loss": 814.87,
+      "reasons": [
+        "RSI low (30.0)",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (2.8x avg)",
+        "Near support (0.2% above)"
+      ]
+    },
+    {
+      "symbol": "ADANIENT",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 22.0,
+      "entry_price": 1841.9,
+      "target": 1849.71,
+      "stop_loss": 1836.69,
+      "reasons": [
+        "RSI low (41.5)",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (3.0x avg)",
+        "Near support (0.5% above)"
+      ]
+    },
+    {
+      "symbol": "AXISBANK",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 20.0,
+      "entry_price": 1200.0,
+      "target": 1205.19,
+      "stop_loss": 1196.54,
+      "reasons": [
+        "MACD bullish crossover",
+        "Near upper BB (BB%=0.88) [caution]",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (1.6x avg)",
+        "Near support (1.0% above)"
+      ]
+    },
+    {
+      "symbol": "WIPRO",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 18.0,
+      "entry_price": 191.4,
+      "target": 191.89,
+      "stop_loss": 191.08,
+      "reasons": [
+        "MACD above signal",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (1.7x avg)",
+        "Near support (0.5% above)"
+      ]
+    },
+    {
+      "symbol": "TITAN",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 18.0,
+      "entry_price": 4065.5,
+      "target": 4080.25,
+      "stop_loss": 4055.66,
+      "reasons": [
+        "MACD above signal",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (1.9x avg)",
+        "Near support (0.6% above)"
+      ]
+    },
+    {
+      "symbol": "HDFCBANK",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 15.0,
+      "entry_price": 744.9,
+      "target": 747.76,
+      "stop_loss": 743.0,
+      "reasons": [
+        "Mid-BB zone (neutral-bullish)",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (2.0x avg)",
+        "Near support (0.6% above)"
+      ]
+    },
+    {
+      "symbol": "NTPC",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 13.0,
+      "entry_price": 364.65,
+      "target": 366.52,
+      "stop_loss": 363.4,
+      "reasons": [
+        "MACD above signal",
+        "Mid-BB zone (neutral-bullish)",
+        "Bearish EMA stack [bearish]",
+        "Near support (0.9% above)"
+      ]
+    },
+    {
+      "symbol": "RELIANCE",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 8.0,
+      "entry_price": 1369.9,
+      "target": 1373.49,
+      "stop_loss": 1367.51,
+      "reasons": [
+        "MACD above signal",
+        "Bearish EMA stack [bearish]",
+        "Near support (0.5% above)"
+      ]
+    },
+    {
+      "symbol": "HCLTECH",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 8.0,
+      "entry_price": 1356.8,
+      "target": 1361.42,
+      "stop_loss": 1353.72,
+      "reasons": [
+        "MACD above signal",
+        "Near upper BB (BB%=0.89) [caution]",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (1.7x avg)",
+        "Near support (0.5% above)"
+      ]
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 8.0,
+      "entry_price": 1728.5,
+      "target": 1733.11,
+      "stop_loss": 1725.43,
+      "reasons": [
+        "MACD above signal",
+        "Near upper BB (BB%=0.83) [caution]",
+        "Bearish EMA stack [bearish]",
+        "High volume spike (1.7x avg)",
+        "Near support (0.8% above)"
+      ]
+    },
+    {
+      "symbol": "TECHM",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 8.0,
+      "entry_price": 1404.5,
+      "target": 1408.82,
+      "stop_loss": 1401.62,
+      "reasons": [
+        "MACD above signal",
+        "Bearish EMA stack [bearish]",
+        "Near support (0.4% above)"
+      ]
+    },
+    {
+      "symbol": "INFY",
+      "strategy": "intraday",
+      "action": "SELL",
+      "score": 0.0,
+      "entry_price": 1278.0,
+      "target": 1282.49,
+      "stop_loss": 1275.01,
+      "reasons": [
+        "MACD above signal",
+        "Near upper BB (BB%=0.82) [caution]",
+        "Bearish EMA stack [bearish]",
+        "Near support (0.7% above)"
+      ]
+    }
+  ],
+  "swing": [
+    {
+      "symbol": "ICICIBANK",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 27.0,
+      "entry_price": 1212.7,
+      "target": 1285.91,
+      "stop_loss": 1168.77,
+      "reasons": [
+        "RSI low (32.9)",
+        "Near lower BB (BB%=0.16)",
+        "Bearish EMA stack [bearish]",
+        "Near support (1.0% above)"
+      ]
+    },
+    {
+      "symbol": "HDFCBANK",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 25.0,
+      "entry_price": 742.25,
+      "target": 811.78,
+      "stop_loss": 700.53,
+      "reasons": [
+        "RSI oversold (30.0)",
+        "Near lower BB (BB%=0.12)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "MARUTI",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 22.0,
+      "entry_price": 12509.0,
+      "target": 13499.0,
+      "stop_loss": 11915.0,
+      "reasons": [
+        "RSI low (34.9)",
+        "MACD bullish crossover",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "INFY",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 15.0,
+      "entry_price": 1275.7,
+      "target": 1368.27,
+      "stop_loss": 1220.16,
+      "reasons": [
+        "RSI low (43.3)",
+        "MACD above signal",
+        "Mid-BB zone (neutral-bullish)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "HCLTECH",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 15.0,
+      "entry_price": 1354.4,
+      "target": 1459.49,
+      "stop_loss": 1291.35,
+      "reasons": [
+        "RSI low (43.0)",
+        "MACD above signal",
+        "Mid-BB zone (neutral-bullish)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "POWERGRID",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 15.0,
+      "entry_price": 292.8,
+      "target": 316.19,
+      "stop_loss": 278.76,
+      "reasons": [
+        "Near lower BB (BB%=0.07)"
+      ]
+    },
+    {
+      "symbol": "ONGC",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 13.0,
+      "entry_price": 288.05,
+      "target": 306.58,
+      "stop_loss": 276.93,
+      "reasons": [
+        "MACD above signal",
+        "Near upper BB (BB%=1.01) [caution]",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "TCS",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 10.0,
+      "entry_price": 2408.2,
+      "target": 2564.57,
+      "stop_loss": 2314.37,
+      "reasons": [
+        "RSI low (36.4)",
+        "MACD above signal",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "WIPRO",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 10.0,
+      "entry_price": 191.18,
+      "target": 204.06,
+      "stop_loss": 183.45,
+      "reasons": [
+        "RSI low (38.6)",
+        "MACD above signal",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "RELIANCE",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 2.0,
+      "entry_price": 1369.2,
+      "target": 1450.74,
+      "stop_loss": 1320.28,
+      "reasons": [
+        "RSI low (43.5)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "SBIN",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 2.0,
+      "entry_price": 1017.8,
+      "target": 1107.35,
+      "stop_loss": 964.07,
+      "reasons": [
+        "RSI low (38.7)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 2.0,
+      "entry_price": 817.3,
+      "target": 910.5,
+      "stop_loss": 761.38,
+      "reasons": [
+        "RSI low (36.6)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "AXISBANK",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 2.0,
+      "entry_price": 1193.1,
+      "target": 1290.73,
+      "stop_loss": 1134.52,
+      "reasons": [
+        "RSI low (40.3)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "ADANIENT",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 2.0,
+      "entry_price": 1842.5,
+      "target": 2024.91,
+      "stop_loss": 1733.05,
+      "reasons": [
+        "RSI low (38.3)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 0.0,
+      "entry_price": 1385.4,
+      "target": 1506.03,
+      "stop_loss": 1313.02,
+      "reasons": [
+        "Mid-BB zone (neutral-bullish)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "TECHM",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 0.0,
+      "entry_price": 1404.5,
+      "target": 1511.7,
+      "stop_loss": 1340.18,
+      "reasons": [
+        "MACD above signal",
+        "Near upper BB (BB%=0.84) [caution]",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "TITAN",
+      "strategy": "swing",
+      "action": "SELL",
+      "score": 0.0,
+      "entry_price": 4065.5,
+      "target": 4390.2,
+      "stop_loss": 3870.68,
+      "reasons": [
+        "Mid-BB zone (neutral-bullish)",
+        "Bearish EMA stack [bearish]"
+      ]
+    }
+  ],
+  "longterm": [
+    {
+      "symbol": "SUNPHARMA",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 28.0,
+      "entry_price": 1728.5,
+      "target": 2023.5,
+      "stop_loss": 1581.0,
+      "reasons": [
+        "MACD above signal",
+        "Mid-BB zone (neutral-bullish)",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "ICICIBANK",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 27.0,
+      "entry_price": 1212.7,
+      "target": 1434.07,
+      "stop_loss": 1102.01,
+      "reasons": [
+        "RSI low (31.5)",
+        "Near lower BB (BB%=-0.03)",
+        "Bearish EMA stack [bearish]",
+        "Near support (1.0% above)"
+      ]
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 27.0,
+      "entry_price": 817.3,
+      "target": 1061.77,
+      "stop_loss": 695.06,
+      "reasons": [
+        "RSI low (34.5)",
+        "Near lower BB (BB%=0.01)"
+      ]
+    },
+    {
+      "symbol": "AXISBANK",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 27.0,
+      "entry_price": 1193.1,
+      "target": 1485.07,
+      "stop_loss": 1047.11,
+      "reasons": [
+        "RSI low (42.7)",
+        "Near lower BB (BB%=0.13)"
+      ]
+    },
+    {
+      "symbol": "MARUTI",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 27.0,
+      "entry_price": 12509.0,
+      "target": 15916.43,
+      "stop_loss": 10805.29,
+      "reasons": [
+        "RSI low (31.9)",
+        "Near lower BB (BB%=0.08)"
+      ]
+    },
+    {
+      "symbol": "TCS",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 25.0,
+      "entry_price": 2408.2,
+      "target": 3067.47,
+      "stop_loss": 2078.57,
+      "reasons": [
+        "RSI oversold (23.4)",
+        "Near lower BB (BB%=0.13)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "HDFCBANK",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 25.0,
+      "entry_price": 742.25,
+      "target": 924.25,
+      "stop_loss": 651.25,
+      "reasons": [
+        "RSI oversold (19.3)",
+        "Near lower BB (BB%=-0.01)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "WIPRO",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 25.0,
+      "entry_price": 191.18,
+      "target": 249.24,
+      "stop_loss": 162.15,
+      "reasons": [
+        "RSI oversold (28.6)",
+        "Near lower BB (BB%=0.15)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "NTPC",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 23.0,
+      "entry_price": 364.65,
+      "target": 441.66,
+      "stop_loss": 326.14,
+      "reasons": [
+        "MACD above signal",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "POWERGRID",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 23.0,
+      "entry_price": 292.8,
+      "target": 358.37,
+      "stop_loss": 260.02,
+      "reasons": [
+        "MACD above signal",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "SBIN",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 20.0,
+      "entry_price": 1017.8,
+      "target": 1276.19,
+      "stop_loss": 888.61,
+      "reasons": [
+        "Mid-BB zone (neutral-bullish)",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "TITAN",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 20.0,
+      "entry_price": 4065.5,
+      "target": 4893.13,
+      "stop_loss": 3651.69,
+      "reasons": [
+        "Mid-BB zone (neutral-bullish)",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "INFY",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 17.0,
+      "entry_price": 1275.7,
+      "target": 1674.07,
+      "stop_loss": 1076.51,
+      "reasons": [
+        "RSI low (33.3)",
+        "Near lower BB (BB%=0.18)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "HCLTECH",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 17.0,
+      "entry_price": 1354.4,
+      "target": 1747.92,
+      "stop_loss": 1157.64,
+      "reasons": [
+        "RSI low (35.1)",
+        "Near lower BB (BB%=0.17)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "ADANIENT",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 17.0,
+      "entry_price": 1842.5,
+      "target": 2439.81,
+      "stop_loss": 1543.84,
+      "reasons": [
+        "RSI low (34.4)",
+        "Near lower BB (BB%=0.10)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "RELIANCE",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 12.0,
+      "entry_price": 1369.2,
+      "target": 1683.43,
+      "stop_loss": 1212.09,
+      "reasons": [
+        "RSI low (43.5)"
+      ]
+    },
+    {
+      "symbol": "TECHM",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 2.0,
+      "entry_price": 1404.5,
+      "target": 1798.07,
+      "stop_loss": 1207.71,
+      "reasons": [
+        "RSI low (42.2)",
+        "Bearish EMA stack [bearish]"
+      ]
+    },
+    {
+      "symbol": "ONGC",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 0.0,
+      "entry_price": 288.05,
+      "target": 357.23,
+      "stop_loss": 253.46,
+      "reasons": [
+        "RSI overbought (70.3) [bearish]",
+        "MACD above signal",
+        "Near upper BB (BB%=0.94) [caution]",
+        "Bullish EMA stack (9>21>50)"
+      ]
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "strategy": "longterm",
+      "action": "SELL",
+      "score": 0.0,
+      "entry_price": 1385.4,
+      "target": 1784.03,
+      "stop_loss": 1186.09,
+      "reasons": []
+    }
+  ],
+  "strategy_accuracy": {
+    "intraday": {
+      "strategy": "intraday",
+      "total_signals": 0,
+      "winning_signals": 0,
+      "accuracy": 0,
+      "avg_return": 0
+    },
+    "swing": {
+      "strategy": "swing",
+      "total_signals": 0,
+      "winning_signals": 0,
+      "accuracy": 0,
+      "avg_return": 0
+    },
+    "longterm": {
+      "strategy": "longterm",
+      "total_signals": 0,
+      "winning_signals": 0,
+      "accuracy": 0,
+      "avg_return": 0
+    }
+  }
+}

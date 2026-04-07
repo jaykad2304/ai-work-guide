@@ -1,0 +1,11 @@
+Test Case: Lenskart Home Page Loads
+1. Navigate to https://www.lenskart.com
+2. Verify text "Top Categories" is displayed
+
+Test Case: Lenskart Search For glasses
+1. Navigate to https://www.lenskart.com
+2. Type "glasses" in search field
+3. Press Enter
+4. Verify search results are displayed
+5. Wait for 3 seconds
+6. Verify page url is "glasses"

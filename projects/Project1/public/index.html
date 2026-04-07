@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <title>My Blog</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>if(localStorage.getItem('darkMode')==='true')document.documentElement.classList.add('dark-mode')</script>
+</head>
+<body id="home" class="theme-classic-paper">
+  <header>
+    <div class="container">
+      <div>
+        <h1><a href="/">My Blog</a></h1>
+        <p class="site-subtitle">A multilingual blog space for Indian languages and moods.</p>
+      </div>
+      <div class="header-actions">
+        <button id="dark-toggle" class="btn-icon" aria-label="Toggle dark mode"><span class="toggle-icon">☾</span></button>
+        <a href="editor.html" class="btn btn-primary" id="new-post-btn" style="display:none">+ New Post</a>
+        <a href="/login.html" class="btn btn-secondary" id="login-btn" style="display:none">Login</a>
+        <button class="btn btn-secondary" id="logout-btn" style="display:none">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-main">
+    <div class="home-container">
+      <!-- Sidebar with posts list -->
+      <aside class="posts-sidebar">
+        <div class="sidebar-header">
+          <h2>Posts</h2>
+        </div>
+        <div class="sidebar-filter">
+          <input type="text" id="filter-search" placeholder="Search posts..." autocomplete="off">
+          <select id="filter-lang">
+            <option value="">All Languages</option>
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+            <option value="Tamil">Tamil</option>
+            <option value="Telugu">Telugu</option>
+            <option value="Kannada">Kannada</option>
+            <option value="Gujarati">Gujarati</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Malayalam">Malayalam</option>
+            <option value="Bengali">Bengali</option>
+          </select>
+        </div>
+        <div id="posts-list" class="posts-list-sidebar"></div>
+      </aside>
+
+      <!-- Preview panel for selected post -->
+      <section class="preview-section">
+        <div id="preview-area" class="preview-area">
+          <div class="empty-preview">
+            <p>No post selected</p>
+            <p class="preview-hint">Click a post from the list to view it here</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <template id="post-card-template">
+    <div class="post-sidebar-item">
+      <div class="post-item-header">
+        <h3 class="post-item-title"></h3>
+      </div>
+      <div class="post-item-meta">
+        <span class="tag language-tag"></span>
+        <span class="tag emotion-tag"></span>
+      </div>
+      <div class="post-item-footer">
+        <p class="post-item-date"></p>
+        <span class="reading-time-badge"></span>
+      </div>
+    </div>
+  </template>
+
+  <template id="post-preview-template">
+    <article class="post-preview-card">
+      <div class="preview-header">
+        <button class="btn-back" id="btn-back-preview">← Back</button>
+        <div class="preview-actions">
+          <button class="btn btn-secondary" id="btn-edit-preview">Edit</button>
+          <button class="btn btn-danger" id="btn-delete-preview">Delete</button>
+        </div>
+      </div>
+      <div class="post-preview-content">
+        <h1 id="preview-title"></h1>
+        <p class="preview-meta" id="preview-meta"></p>
+        <div class="preview-tags">
+          <span class="tag" id="preview-language"></span>
+          <span class="tag" id="preview-emotion"></span>
+          <span class="tag secondary" id="preview-theme"></span>
+        </div>
+        <div id="preview-body" class="post-body preview-body"></div>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

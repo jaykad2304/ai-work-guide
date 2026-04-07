@@ -1,0 +1,28 @@
+{
+  "name": "test-automation-framework",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI-powered test automation framework that converts manual test cases to Playwright scripts",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run clean && playwright test",
+    "test:headed": "npm run clean && playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "generate:tests": "node src/generator/testGenerator.js",
+    "report": "allure generate ./allure-results --clean && allure open",
+    "report:html": "playwright show-report",
+    "clean": "node -e \"const fs=require('fs');['allure-results','playwright-report','test-results'].forEach(d=>{if(fs.existsSync(d)){fs.rmSync(d,{recursive:true,force:true});console.log('🗑 Cleaned: '+d);}});\""
+  },
+  "keywords": ["playwright", "automation", "testing", "ai"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright": "^1.40.0",
+    "allure-playwright": "^2.15.0",
+    "allure-commandline": "^2.25.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
