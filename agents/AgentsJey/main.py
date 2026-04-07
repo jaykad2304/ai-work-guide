@@ -27,6 +27,62 @@ Your workflow:
 Be conversational, creative, and thorough. You're both a thinking partner and a coding expert.
 """
 
+# Intent → temperature mapping
+# Low temp (0.2): precise, deterministic tasks (coding, debugging, math)
+# High temp (0.9): open-ended, creative tasks (brainstorming, ideation)
+# Mid temp (0.5): balanced tasks (explanation, analysis, Q&A)
+
+CODING_KEYWORDS = [
+    "write", "code", "function", "implement", "build", "program",
+    "debug", "fix", "refactor", "script", "class", "method",
+    "algorithm", "api", "syntax", "compile", "error", "bug",
+    "variable", "loop", "array", "object", "test", "unit test",
+]
+
+BRAINSTORM_KEYWORDS = [
+    "brainstorm", "idea", "imagine", "explore", "creative", "what if",
+    "suggest", "possibilities", "invent", "design", "concept", "vision",
+    "inspire", "think", "generate ideas", "pitch", "startup", "innovate",
+    "dream", "hypothetical", "alternatives", "reimagine", "experiment",
+]
+
+ANALYTICAL_KEYWORDS = [
+    "explain", "how", "why", "what", "analyze", "compare", "difference",
+    "understand", "describe", "summarize", "review", "evaluate", "assess",
+    "pros", "cons", "tradeoff", "overview", "clarify", "define", "example",
+]
+
+# Behavioral instructions injected per intent to steer response style
+TONE_DIRECTIVES = {
+    "coding": (
+        "[Respond with precision and correctness. "
+        "Write clean, production-ready code with minimal creative deviation.]"
+    ),
+    "brainstorming": (
+        "[Respond with creativity and openness. "
+        "Explore many angles, offer diverse ideas, and think outside the box.]"
+    ),
+    "analytical": (
+        "[Respond in a balanced, clear, and structured way. "
+        "Explain reasoning step by step without over-speculating.]"
+    ),
+}
+
+
+def detect_intent(text: str) -> tuple[str, float]:
+    """Return (intent, temperature) based on keyword matching."""
+    lowered = text.lower()
+
+    coding_score = sum(1 for kw in CODING_KEYWORDS if kw in lowered)
+    brainstorm_score = sum(1 for kw in BRAINSTORM_KEYWORDS if kw in lowered)
+    analytical_score = sum(1 for kw in ANALYTICAL_KEYWORDS if kw in lowered)
+
+    if coding_score >= brainstorm_score and coding_score >= analytical_score:
+        return "coding", 0.2
+    if brainstorm_score >= analytical_score:
+        return "brainstorming", 0.9
+    return "analytical", 0.5
+
 
 async def run():
     options = ClaudeAgentOptions(
@@ -54,8 +110,16 @@ async def run():
                 print("Goodbye!")
                 break
 
+            # Detect intent and set temperature
+            intent, temperature = detect_intent(user_input)
+            print(f"[🌡 Intent: {intent} | Temperature: {temperature}]")
+
+            # Prepend a tone directive that mimics the effect of temperature
+            directive = TONE_DIRECTIVES[intent]
+            augmented_input = f"{directive}\n\n{user_input}"
+
             # Send the message
-            await client.query(user_input)
+            await client.query(augmented_input)
 
             print("\nAgentsJey: ", end="", flush=True)
 
