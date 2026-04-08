@@ -11,10 +11,10 @@
 ## Phase 2 — Agent Systems
 - [x] The ReAct loop
 - [x] Tool use and function calling
-- [ ] Agent memory: in-context vs external
-- [ ] Multi-agent orchestration
-- [ ] Claude Agent SDK deep dive
-- [ ] **Phase 2 Build:** Upgrade AgentsJey + new agent
+- [x] Agent memory: in-context vs external
+- [x] Multi-agent orchestration (Parallel + Hierarchical patterns)
+- [x] Claude Agent SDK deep dive
+- [x] **Phase 2 Build:** AlgoBot - 5-agent stock analysis system (COMPLETE)
 
 ## Phase 3 — RAG & Vector Search
 - [ ] Embeddings
