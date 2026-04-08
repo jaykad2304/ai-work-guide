@@ -1,14 +1,91 @@
 """
 AgentsJey - Brainstorming + Coding Agent
 A Claude-powered agent that helps you explore ideas and generate code.
+
+Memory layers:
+  - Session memory : in-context conversation history, controllable via commands
+  - Persistent memory : ~/.agentsjey/memory.json injected at startup,
+                        updated with `remember: <fact>` commands
 """
 
 import asyncio
+import json
+import os
+from datetime import datetime
+from pathlib import Path
+
 from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
 from claude_agent_sdk.types import AssistantMessage, ResultMessage, TextBlock
 
 
-SYSTEM_PROMPT = """You are AgentsJey, an expert brainstorming and coding assistant.
+# ---------------------------------------------------------------------------
+# Persistent memory helpers
+# ---------------------------------------------------------------------------
+
+MEMORY_PATH = Path.home() / ".agentsjey" / "memory.json"
+
+DEFAULT_MEMORY: dict = {
+    "name": None,
+    "preferences": {},
+    "facts": [],
+    "updated_at": None,
+}
+
+
+def load_persistent_memory() -> dict:
+    """Load memory from disk, creating the file with defaults if absent."""
+    MEMORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not MEMORY_PATH.exists():
+        MEMORY_PATH.write_text(json.dumps(DEFAULT_MEMORY, indent=2))
+        return dict(DEFAULT_MEMORY)
+    try:
+        return json.loads(MEMORY_PATH.read_text())
+    except (json.JSONDecodeError, OSError):
+        return dict(DEFAULT_MEMORY)
+
+
+def save_persistent_memory(memory: dict) -> None:
+    """Write memory back to disk."""
+    memory["updated_at"] = datetime.now().isoformat(timespec="seconds")
+    MEMORY_PATH.write_text(json.dumps(memory, indent=2))
+
+
+def memory_to_prompt_block(memory: dict) -> str:
+    """Render memory as a system-prompt section."""
+    lines = ["## What I know about you (persistent memory)"]
+
+    if memory.get("name"):
+        lines.append(f"- Name: {memory['name']}")
+
+    prefs = memory.get("preferences", {})
+    if prefs:
+        lines.append("- Preferences:")
+        for k, v in prefs.items():
+            lines.append(f"    • {k}: {v}")
+
+    facts = memory.get("facts", [])
+    if facts:
+        lines.append("- Facts:")
+        for f in facts:
+            lines.append(f"    • {f}")
+
+    if len(lines) == 1:
+        return ""  # nothing worth showing yet
+    return "\n".join(lines)
+
+
+def add_fact(memory: dict, fact: str) -> None:
+    """Append a deduplicated fact and persist."""
+    if fact not in memory["facts"]:
+        memory["facts"].append(fact)
+        save_persistent_memory(memory)
+
+
+# ---------------------------------------------------------------------------
+# System prompt
+# ---------------------------------------------------------------------------
+
+BASE_SYSTEM_PROMPT = """You are AgentsJey, an expert brainstorming and coding assistant.
 
 Your job is to:
 1. **Brainstorm** — Help the user deeply explore their ideas. Ask clarifying questions,
@@ -25,12 +102,24 @@ Your workflow:
 - Always offer to extend, refactor, or explain the generated code further.
 
 Be conversational, creative, and thorough. You're both a thinking partner and a coding expert.
+
+## Special commands the user may send (handle silently, no extra commentary)
+- `remember: <fact>`  → acknowledge that you've stored the fact; do not repeat it verbatim.
+- `history`           → this is handled by the shell, not you; ignore if it slips through.
+- `clear history`     → same as above.
 """
 
-# Intent → temperature mapping
-# Low temp (0.2): precise, deterministic tasks (coding, debugging, math)
-# High temp (0.9): open-ended, creative tasks (brainstorming, ideation)
-# Mid temp (0.5): balanced tasks (explanation, analysis, Q&A)
+
+def build_system_prompt(memory: dict) -> str:
+    block = memory_to_prompt_block(memory)
+    if block:
+        return BASE_SYSTEM_PROMPT + "\n\n" + block
+    return BASE_SYSTEM_PROMPT
+
+
+# ---------------------------------------------------------------------------
+# Intent detection & tone directives
+# ---------------------------------------------------------------------------
 
 CODING_KEYWORDS = [
     "write", "code", "function", "implement", "build", "program",
@@ -52,7 +141,6 @@ ANALYTICAL_KEYWORDS = [
     "pros", "cons", "tradeoff", "overview", "clarify", "define", "example",
 ]
 
-# Behavioral instructions injected per intent to steer response style
 TONE_DIRECTIVES = {
     "coding": (
         "[Respond with precision and correctness. "
@@ -72,7 +160,6 @@ TONE_DIRECTIVES = {
 def detect_intent(text: str) -> tuple[str, float]:
     """Return (intent, temperature) based on keyword matching."""
     lowered = text.lower()
-
     coding_score = sum(1 for kw in CODING_KEYWORDS if kw in lowered)
     brainstorm_score = sum(1 for kw in BRAINSTORM_KEYWORDS if kw in lowered)
     analytical_score = sum(1 for kw in ANALYTICAL_KEYWORDS if kw in lowered)
@@ -84,17 +171,66 @@ def detect_intent(text: str) -> tuple[str, float]:
     return "analytical", 0.5
 
 
+# ---------------------------------------------------------------------------
+# Session memory helpers
+# ---------------------------------------------------------------------------
+
+def print_history(history: list[dict]) -> None:
+    if not history:
+        print("[Session history is empty]")
+        return
+    print(f"\n--- Session history ({len(history)} messages) ---")
+    for i, entry in enumerate(history, 1):
+        role = entry["role"].upper()
+        preview = entry["text"][:120].replace("\n", " ")
+        ellipsis = "…" if len(entry["text"]) > 120 else ""
+        print(f"  [{i}] {role}: {preview}{ellipsis}")
+    print("---\n")
+
+
+HISTORY_CONTEXT_TURNS = 10
+
+
+def build_history_context(history: list[dict]) -> str:
+    """Summarise recent history as a leading context block for the next query."""
+    if not history:
+        return ""
+    recent = history[-HISTORY_CONTEXT_TURNS:]
+    lines = ["[Conversation so far this session:]"]
+    for entry in recent:
+        role_label = "User" if entry["role"] == "user" else "Assistant"
+        text = entry["text"]
+        if len(text) > 400:
+            text = text[:400] + "…"
+        lines.append(f"{role_label}: {text}")
+    lines.append("[End of prior context]\n")
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Main loop
+# ---------------------------------------------------------------------------
+
 async def run():
+    memory = load_persistent_memory()
+    system_prompt = build_system_prompt(memory)
+
     options = ClaudeAgentOptions(
-        system_prompt=SYSTEM_PROMPT,
+        system_prompt=system_prompt,
         permission_mode="dontAsk",
     )
 
     print("=" * 60)
     print("  AgentsJey — Brainstorming + Coding Agent")
-    print("  Type your idea or question. Type 'exit' to quit.")
+    print("  Commands: history | clear history | memory | forget | remember: <fact>")
+    print("  Type 'exit' to quit.")
     print("=" * 60)
+    if memory.get("name"):
+        print(f"  Welcome back, {memory['name']}!")
     print()
+
+    # Session memory: list of {role, text} dicts
+    session_history: list[dict] = []
 
     async with ClaudeSDKClient(options=options) as client:
         while True:
@@ -106,35 +242,99 @@ async def run():
 
             if not user_input:
                 continue
+
+            # --- Built-in shell commands (no SDK call needed) ---
+
             if user_input.lower() in ("exit", "quit", "bye"):
                 print("Goodbye!")
                 break
 
-            # Detect intent and set temperature
+            if user_input.lower() == "history":
+                print_history(session_history)
+                continue
+
+            if user_input.lower() == "clear history":
+                session_history.clear()
+                print("[Session history cleared]\n")
+                continue
+
+            if user_input.lower() == "memory":
+                block = memory_to_prompt_block(memory)
+                print(block if block else "[No persistent memory stored yet]")
+                print()
+                continue
+
+            if user_input.lower() == "forget":
+                memory.update({"name": None, "preferences": {}, "facts": []})
+                save_persistent_memory(memory)
+                print("[Persistent memory cleared]\n")
+                continue
+
+            # `remember: <fact>` — store and let agent acknowledge in this turn
+            if user_input.lower().startswith("remember:"):
+                fact = user_input[len("remember:"):].strip()
+                if not fact:
+                    print("[Nothing to remember — usage: remember: <fact>]\n")
+                    continue
+                add_fact(memory, fact)
+                print(f"[Stored in persistent memory: \"{fact}\"]\n")
+                augmented_input = (
+                    f"The user just asked you to remember this fact: \"{fact}\". "
+                    f"Acknowledge it briefly and naturally.\n\n"
+                    f"Updated memory:\n{memory_to_prompt_block(memory)}"
+                )
+                await client.query(augmented_input)
+                print("\nAgentsJey: ", end="", flush=True)
+                async for message in client.receive_response():
+                    if isinstance(message, AssistantMessage):
+                        for block in message.content:
+                            if isinstance(block, TextBlock):
+                                print(block.text, end="", flush=True)
+                    elif isinstance(message, ResultMessage):
+                        cost = getattr(message, "total_cost_usd", None)
+                        if cost:
+                            print(f"\n\n[Cost: ${cost:.4f}]", end="")
+                print("\n")
+                continue
+
+            # --- Intent detection ---
             intent, temperature = detect_intent(user_input)
-            print(f"[🌡 Intent: {intent} | Temperature: {temperature}]")
+            print(f"[Intent: {intent} | Temp: {temperature}]")
 
-            # Prepend a tone directive that mimics the effect of temperature
+            # --- Build augmented query (tone directive + history context) ---
             directive = TONE_DIRECTIVES[intent]
-            augmented_input = f"{directive}\n\n{user_input}"
+            history_ctx = build_history_context(session_history)
+            augmented_input = f"{directive}\n\n{history_ctx}{user_input}"
 
-            # Send the message
+            # Record user turn in session memory
+            session_history.append({"role": "user", "text": user_input})
+
+            # --- Send to SDK ---
             await client.query(augmented_input)
 
             print("\nAgentsJey: ", end="", flush=True)
 
-            # Stream the response until ResultMessage
+            # Collect assistant response for session memory
+            assistant_text_parts: list[str] = []
+
             async for message in client.receive_response():
                 if isinstance(message, AssistantMessage):
                     for block in message.content:
                         if isinstance(block, TextBlock):
                             print(block.text, end="", flush=True)
+                            assistant_text_parts.append(block.text)
                 elif isinstance(message, ResultMessage):
                     cost = getattr(message, "total_cost_usd", None)
                     if cost:
                         print(f"\n\n[Cost: ${cost:.4f}]", end="")
 
             print("\n")
+
+            # Record assistant turn in session memory
+            if assistant_text_parts:
+                session_history.append(
+                    {"role": "assistant", "text": "".join(assistant_text_parts)}
+                )
 
 
 if __name__ == "__main__":
