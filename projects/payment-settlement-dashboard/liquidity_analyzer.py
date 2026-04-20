@@ -11,7 +11,7 @@ def forecast_settlement_timing(transactions_df):
     - T+7: High-touch settlements requiring manual intervention
 
     Returns DataFrame with columns:
-    - payment_method, country, transaction_date, settlement_date, days_to_settle
+    - payment_method, country, timestamp, settlement_date, days_to_settle
     """
 
     # Settlement timing rules by payment method + region
@@ -34,6 +34,12 @@ def forecast_settlement_timing(transactions_df):
         ('Bank Transfer', 'GB'): 3,
         ('Bank Transfer', 'IN'): 5,
         ('Bank Transfer', 'BR'): 5,
+        # Add more payment methods to the rules dict
+        ('Alipay', 'CN'): 1,
+        ('Alipay', 'IN'): 3,
+        ('WeChat Pay', 'CN'): 1,
+        ('Klarna', 'GB'): 2,
+        ('Klarna', 'DE'): 2,
     }
 
     result = transactions_df.copy()
@@ -47,10 +53,10 @@ def forecast_settlement_timing(transactions_df):
     )
 
     # Calculate when the settlement will complete
-    result['settlement_date'] = pd.to_datetime(result['transaction_date']) + \
+    result['settlement_date'] = pd.to_datetime(result['timestamp']) + \
         pd.to_timedelta(result['days_to_settle'], unit='D')
 
-    return result[['payment_method', 'country', 'transaction_date',
+    return result[['payment_method', 'country', 'timestamp',
                    'settlement_date', 'days_to_settle']]
 
 
@@ -64,7 +70,7 @@ def get_settlement_timing_summary(forecast_df):
     """
     summary = forecast_df.groupby(['payment_method', 'country']).agg({
         'days_to_settle': 'first',
-        'transaction_date': 'count'  # Number of transactions using this method/country
+        'timestamp': 'count'  # Number of transactions using this method/country
     }).reset_index()
 
     summary.columns = ['Payment Method', 'Country', 'Days to Settle', 'Transaction Count']
@@ -87,13 +93,13 @@ def forecast_currency_position(transactions_df, forecast_df):
 
     # Merge transactions with forecast data
     merged = transactions_df.merge(
-        forecast_df[['transaction_date', 'settlement_date', 'days_to_settle']],
-        left_on='transaction_date',
-        right_on='transaction_date',
+        forecast_df[['timestamp', 'settlement_date', 'days_to_settle']],
+        left_on='timestamp',
+        right_on='timestamp',
         how='left'
     )
 
-    # Map payment method to currency (simplified: use country for currency)
+    # Map country to currency (simplified: use country for currency)
     # In reality, Boku would use actual merchant currency selection
     currency_map = {
         'US': 'USD',
@@ -102,13 +108,14 @@ def forecast_currency_position(transactions_df, forecast_df):
         'BR': 'BRL',
         'DE': 'EUR',
         'JP': 'JPY',
+        'CN': 'CNY',
     }
 
     merged['currency'] = merged['country'].map(currency_map).fillna('USD')
 
     # Group by settlement_date and currency to get position
     position = merged.groupby(['settlement_date', 'currency']).agg({
-        'amount': 'sum'
+        'amount_usd': 'sum'
     }).reset_index()
 
     position.columns = ['Settlement Date', 'Currency', 'Amount Pending']
