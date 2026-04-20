@@ -13,6 +13,14 @@ import plotly.graph_objects as go
 import plotly.express as px
 from sample_data import generate_settlement_data, inject_anomalies
 from settlement_analyzer import SettlementAnalyzer
+from liquidity_analyzer import (
+    forecast_settlement_timing,
+    get_settlement_timing_summary,
+    forecast_currency_position,
+    get_currency_position_summary,
+    identify_data_challenges,
+    get_data_challenges_summary
+)
 from datetime import datetime
 
 # Page configuration
@@ -484,6 +492,178 @@ with st.expander("View raw settlement transactions"):
     filtered_df['timestamp'] = filtered_df['timestamp'].astype(str)
     st.dataframe(filtered_df, use_container_width=True, height=400)
     st.caption(f"Showing {len(filtered_df)} of {len(df)} transactions")
+
+# ==================== NEW SECTION: SETTLEMENT TIMING FORECAST ====================
+st.divider()
+st.header("⏰ Settlement Timing Forecast")
+st.markdown("""
+**Why this matters:** Different payment methods settle on different schedules.
+Google Pay settles in 1 day in the US, but 3-5 days in India. This creates cash flow gaps.
+
+**The Problem:** Boku receives payment from the merchant on Day 0, but funds from the payment
+partner might not arrive until Day 3-7. During that gap, the cash is "in flight" and unreconciled.
+This is a critical operational challenge that affects:
+- Liquidity forecasting
+- Automation opportunity identification
+- Partner payment timing
+- FX exposure and risk
+""")
+
+# Generate forecast
+forecast_data = forecast_settlement_timing(df)
+timing_summary = get_settlement_timing_summary(forecast_data)
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Fastest Settlement", "1 day", "(Credit cards in US/UK)")
+with col2:
+    st.metric("Slowest Settlement", "7 days", "(Carrier billing in emerging markets)")
+with col3:
+    avg_days = forecast_data['days_to_settle'].mean()
+    st.metric("Average Days to Settle", f"{avg_days:.1f}", "across all methods")
+
+st.subheader("Settlement Timeline by Payment Method & Country")
+st.dataframe(timing_summary, use_container_width=True)
+
+st.markdown("""
+**What this means for Boku:**
+- **1-day methods:** $ in hand quickly, low operational friction, competitive rates
+- **7-day methods:** High margin potential, but cash is stuck waiting — operational challenge
+- **Forecast benefit:** Know exactly when cash arrives to plan liquidity and identify automation opportunities
+
+**For the Payments Transformation role:** This is the foundation for liquidity forecasting and automated fund routing.
+""")
+
+# ==================== NEW SECTION: CURRENCY POSITION TRACKER ====================
+st.divider()
+st.header("💱 Currency Position Tracker (7-Day Forecast)")
+st.markdown("""
+**The Problem:** At any moment, Boku holds cash in 50+ currencies across 70+ countries.
+Scenario: You have ₹50M waiting to settle in 3 days, but you need £2M RIGHT NOW to pay UK partners.
+Do you have the GBP? Can you convert INR to GBP without losing to FX rates?
+
+**Without visibility:** You get surprised when settlement lands late or in the wrong currency.
+**With this forecast:** You know where your cash is and can plan rebalancing proactively.
+""")
+
+# Generate currency position forecast
+position_data = forecast_currency_position(df, forecast_data)
+currency_summary = get_currency_position_summary(position_data)
+
+st.subheader("Cash Waiting by Currency (Forecast for next 7 days)")
+st.dataframe(currency_summary, use_container_width=True)
+
+# Visualize currency exposure
+if not currency_summary.empty:
+    fig = px.bar(
+        currency_summary,
+        x='Currency',
+        y='Amount Pending',
+        color='Risk Level',
+        color_discrete_map={'Low': '#90EE90', 'Medium': '#FFD700', 'High': '#FF6B6B'},
+        title='Currency Exposure: Red = Cash Stuck Longer = Higher Risk',
+        labels={'Amount Pending': 'Amount ($)', 'Currency': 'Currency'}
+    )
+    fig.update_layout(height=400)
+    st.plotly_chart(fig, use_container_width=True)
+
+st.markdown("""
+**Why this matters:**
+- **High Risk (Red):** Large amounts stuck = FX volatility risk + liquidity gap
+- **Example:** ₹50M waiting 5 days while you need immediate GBP
+  - If ₹/GBP was 100 at forecast but drops to 98 at settlement: 1% loss = ₹1M gone
+  - This cascades: Bad forecast → Wrong FX decision → Cost impact
+
+**For the interview:** This shows how settlement timing cascades into liquidity and FX decisions.
+One data problem (late reconciliation) breaks the entire forecast: Late data → Wrong forecast → Stuck cash → Higher cost.
+""")
+
+# ==================== NEW SECTION: DATA CHALLENGES BACKDROP ====================
+st.divider()
+st.header("🔴 Data Challenges: Why Forecasting Is Hard (The Backdrop)")
+st.markdown("""
+**This is what the interview feedback mentioned.**
+
+You can forecast settlement timing and currency positions IF data is perfect.
+But in production Boku, data has real constraints. Here are the challenges that break forecasting:
+""")
+
+challenges_dict = get_data_challenges_summary()
+
+# Display as expandable cards
+for i, (challenge_name, challenge_desc) in enumerate(challenges_dict.items()):
+    with st.expander(f"🔧 {challenge_name}", expanded=(i == 0)):
+        st.write(challenge_desc)
+
+        # Show impact
+        if challenge_name == 'Settlement Timing':
+            st.warning("**Impact:** Forecast is 6-24 hours stale. Can't automate based on stale data. Must build retry logic and cache strategies.")
+        elif challenge_name == 'Reconciliation Gaps':
+            st.warning("**Impact:** 1-3% of forecast is wrong. 1% error on $10B = $100M misforecast. Risk isn't theoretical.")
+        elif challenge_name == 'Multi-Leg Settlements':
+            st.warning("**Impact:** Each intermediary adds 1-3 days. 3-leg settlement can take 10+ days. Timing becomes unpredictable.")
+        elif challenge_name == 'FX Volatility':
+            st.warning("**Impact:** Final cash different than expected. Can't optimize cost if outcome is unknown at forecast time.")
+        elif challenge_name == 'Partner Reliability':
+            st.warning("**Impact:** When APIs time out, forecast breaks. Must build fault-tolerant data pipelines with fallbacks.")
+        elif challenge_name == 'Regulatory Holds':
+            st.warning("**Impact:** Some cash locked 24-48h. Can't move it until hold clears. Forecast must account for this.")
+        elif challenge_name == 'Chargeback Delays':
+            st.warning("**Impact:** Disputes appear weeks/months later. Forecast doesn't account for reversals. Need historical models.")
+
+st.divider()
+st.subheader("Why This Matters for Automation")
+
+col_why1, col_why2 = st.columns(2)
+
+with col_why1:
+    st.markdown("""
+**The Automation Gap:**
+
+Intuition: "Let's automate fund rebalancing"
+
+Reality check:
+- ❌ Need: Real-time currency positions
+- ❌ Have: Settlement data 6 hours late
+- ❌ Need: 100% reconciliation
+- ❌ Have: 1-3% gaps in reconciliation records
+- ❌ Need: Deterministic settlement timing
+- ❌ Have: Multi-leg settlements with variable delays
+- ❌ Need: Known FX rates to calculate impact
+- ❌ Have: Rates locked only at settlement, not forecast
+    """)
+
+with col_why2:
+    st.markdown("""
+**The Real Solution Path:**
+
+Before you automate movement, you fix data problems:
+
+1. **Fix Partner APIs** → Lower settlement data latency
+2. **Fix Reconciliation** → Close gaps in transaction records
+3. **Build Data Pipeline** → Real-time currency position visibility
+4. **Build FX Strategy** → Handle rate volatility in automation logic
+5. **Then Automate** → Now you have the data to automate safely
+
+**Key insight:** The bottleneck isn't the algorithm. It's the data.
+
+This is the strategic thinking Boku needs:
+Not "here's an algorithm", but "here's what we need to fix to enable automation".
+    """)
+
+st.info("""
+📊 **For your interview:**
+
+When asked "What would you automate first?", answer:
+"Before we automate fund movements, we need to solve data pipeline problems. Specifically,
+settlement data latency and reconciliation gaps break any forecast. I'd invest in:
+1. Reducing settlement data latency from 6+ hours to <1 hour
+2. Closing reconciliation gaps (currently 1-3%, target <0.1%)
+3. Building multi-currency position visibility
+4. Then automating fund rebalancing with confidence"
+
+This shows you understand the "backdrop" — the real operational constraints, not just the technical algorithm.
+""")
 
 # Footer with architecture info
 st.divider()
