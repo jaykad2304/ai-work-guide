@@ -17,29 +17,41 @@ def forecast_settlement_timing(transactions_df):
     # Settlement timing rules by payment method + region
     # Key insight: Settlement timing is largely determined by country regulations, not method
     settlement_rules = {
-        ('Google Pay', 'US'): 1,
-        ('Google Pay', 'GB'): 1,
-        ('Google Pay', 'IN'): 3,
-        ('Google Pay', 'BR'): 5,
-        ('Apple Pay', 'US'): 1,
-        ('Apple Pay', 'GB'): 1,
-        ('Apple Pay', 'IN'): 3,
-        ('Apple Pay', 'BR'): 5,
-        ('Carrier Billing', 'US'): 2,
-        ('Carrier Billing', 'IN'): 7,
-        ('Carrier Billing', 'BR'): 7,
-        ('Digital Wallet', 'US'): 2,
-        ('Digital Wallet', 'IN'): 5,
-        ('Digital Wallet', 'BR'): 7,
-        ('Bank Transfer', 'GB'): 3,
-        ('Bank Transfer', 'IN'): 5,
-        ('Bank Transfer', 'BR'): 5,
-        # Add more payment methods to the rules dict
-        ('Alipay', 'CN'): 1,
-        ('Alipay', 'IN'): 3,
-        ('WeChat Pay', 'CN'): 1,
-        ('Klarna', 'GB'): 2,
-        ('Klarna', 'DE'): 2,
+        # Google Pay - varies by region
+        ('Google Pay', 'Global'): 1,
+        ('Google Pay', 'India'): 3,
+        ('Google Pay', 'Brazil'): 5,
+        ('Google Pay', 'Netherlands'): 1,
+
+        # Apple Pay
+        ('Apple Pay', 'Global'): 1,
+        ('Apple Pay', 'India'): 3,
+        ('Apple Pay', 'Brazil'): 5,
+        ('Apple Pay', 'Netherlands'): 1,
+
+        # Alipay (China)
+        ('Alipay', 'China'): 1,
+        ('Alipay', 'Global'): 2,
+
+        # WeChat Pay (China)
+        ('WeChat Pay', 'China'): 1,
+        ('WeChat Pay', 'Global'): 2,
+
+        # UPI (India)
+        ('UPI', 'India'): 2,
+        ('UPI', 'Global'): 3,
+
+        # iDEAL (Netherlands/Europe)
+        ('iDEAL', 'Netherlands'): 1,
+        ('iDEAL', 'Global'): 2,
+
+        # Carrier Billing (Japan)
+        ('Carrier Billing (JP)', 'Japan'): 2,
+        ('Carrier Billing (JP)', 'Global'): 3,
+
+        # Boleto (Brazil)
+        ('Boleto', 'Brazil'): 5,
+        ('Boleto', 'Global'): 4,
     }
 
     result = transactions_df.copy()
