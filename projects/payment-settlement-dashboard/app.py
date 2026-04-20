@@ -526,12 +526,10 @@ st.subheader("Settlement Timeline by Payment Method & Country")
 st.dataframe(timing_summary, use_container_width=True)
 
 st.markdown("""
-**What this means for Boku:**
+**Key Insights:**
 - **1-day methods:** $ in hand quickly, low operational friction, competitive rates
 - **7-day methods:** High margin potential, but cash is stuck waiting — operational challenge
 - **Forecast benefit:** Know exactly when cash arrives to plan liquidity and identify automation opportunities
-
-**For the Payments Transformation role:** This is the foundation for liquidity forecasting and automated fund routing.
 """)
 
 # ==================== NEW SECTION: CURRENCY POSITION TRACKER ====================
@@ -568,24 +566,19 @@ if not currency_summary.empty:
     st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("""
-**Why this matters:**
+**Key Insights:**
 - **High Risk (Red):** Large amounts stuck = FX volatility risk + liquidity gap
 - **Example:** ₹50M waiting 5 days while you need immediate GBP
   - If ₹/GBP was 100 at forecast but drops to 98 at settlement: 1% loss = ₹1M gone
   - This cascades: Bad forecast → Wrong FX decision → Cost impact
-
-**For the interview:** This shows how settlement timing cascades into liquidity and FX decisions.
-One data problem (late reconciliation) breaks the entire forecast: Late data → Wrong forecast → Stuck cash → Higher cost.
 """)
 
-# ==================== NEW SECTION: DATA CHALLENGES BACKDROP ====================
+# ==================== NEW SECTION: DATA CHALLENGES ====================
 st.divider()
-st.header("🔴 Data Challenges: Why Forecasting Is Hard (The Backdrop)")
+st.header("🔴 Data Challenges: Why Forecasting Is Hard")
 st.markdown("""
-**This is what the interview feedback mentioned.**
-
-You can forecast settlement timing and currency positions IF data is perfect.
-But in production Boku, data has real constraints. Here are the challenges that break forecasting:
+Forecasting settlement timing and currency positions requires clean data.
+In production, data has real constraints. Here are the key challenges that impact forecasting:
 """)
 
 challenges_dict = get_data_challenges_summary()
@@ -612,58 +605,40 @@ for i, (challenge_name, challenge_desc) in enumerate(challenges_dict.items()):
             st.warning("**Impact:** Disputes appear weeks/months later. Forecast doesn't account for reversals. Need historical models.")
 
 st.divider()
-st.subheader("Why This Matters for Automation")
+st.subheader("Automation Strategy")
 
-col_why1, col_why2 = st.columns(2)
+col_auto1, col_auto2 = st.columns(2)
 
-with col_why1:
+with col_auto1:
     st.markdown("""
 **The Automation Gap:**
 
-Intuition: "Let's automate fund rebalancing"
-
-Reality check:
+Before automating fund movement:
 - ❌ Need: Real-time currency positions
 - ❌ Have: Settlement data 6 hours late
-- ❌ Need: 100% reconciliation
-- ❌ Have: 1-3% gaps in reconciliation records
-- ❌ Need: Deterministic settlement timing
-- ❌ Have: Multi-leg settlements with variable delays
-- ❌ Need: Known FX rates to calculate impact
-- ❌ Have: Rates locked only at settlement, not forecast
+- ❌ Need: 100% reconciliation accuracy
+- ❌ Have: 1-3% gaps in records
+- ❌ Need: Predictable settlement timing
+- ❌ Have: Variable multi-leg delays
+- ❌ Need: Known FX rates
+- ❌ Have: Rates locked at settlement only
     """)
 
-with col_why2:
+with col_auto2:
     st.markdown("""
-**The Real Solution Path:**
+**The Solution Path:**
 
-Before you automate movement, you fix data problems:
+Fix data problems first:
 
-1. **Fix Partner APIs** → Lower settlement data latency
-2. **Fix Reconciliation** → Close gaps in transaction records
-3. **Build Data Pipeline** → Real-time currency position visibility
-4. **Build FX Strategy** → Handle rate volatility in automation logic
-5. **Then Automate** → Now you have the data to automate safely
+1. **Reduce Settlement Data Latency** → From 6+ hours to <1 hour
+2. **Close Reconciliation Gaps** → From 1-3% to <0.1%
+3. **Build Data Pipeline** → Real-time currency visibility
+4. **Add FX Strategy** → Handle rate volatility
+5. **Then Automate** → Safe, confident fund movement
 
-**Key insight:** The bottleneck isn't the algorithm. It's the data.
-
-This is the strategic thinking Boku needs:
-Not "here's an algorithm", but "here's what we need to fix to enable automation".
+**Key Principle:** Data quality precedes automation.
+The bottleneck is data, not algorithms.
     """)
-
-st.info("""
-📊 **For your interview:**
-
-When asked "What would you automate first?", answer:
-"Before we automate fund movements, we need to solve data pipeline problems. Specifically,
-settlement data latency and reconciliation gaps break any forecast. I'd invest in:
-1. Reducing settlement data latency from 6+ hours to <1 hour
-2. Closing reconciliation gaps (currently 1-3%, target <0.1%)
-3. Building multi-currency position visibility
-4. Then automating fund rebalancing with confidence"
-
-This shows you understand the "backdrop" — the real operational constraints, not just the technical algorithm.
-""")
 
 # Footer with architecture info
 st.divider()
