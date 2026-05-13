@@ -4,6 +4,7 @@ from sqlalchemy import desc
 from backend.database import get_db
 from backend.models import Insight, Event
 from collections import Counter
+from backend.intelligence.insight_generator import InsightGenerator
 
 router = APIRouter(prefix="/insights", tags=["insights"])
 
@@ -31,6 +32,20 @@ async def get_recommendations(db: Session = Depends(get_db)):
     return {
         "type": "recommendations",
         "recommendations": [i.to_dict() for i in insights]
+    }
+
+@router.post("/generate")
+async def generate_insights(db: Session = Depends(get_db)):
+    """Generate all insights from current data"""
+    generator = InsightGenerator(db)
+    generator.generate_all_insights()
+
+    insights = db.query(Insight).all()
+
+    return {
+        "status": "success",
+        "insights_generated": len(insights),
+        "insights": [i.to_dict() for i in insights]
     }
 
 @router.get("/stats")
