@@ -32,17 +32,17 @@ function QuoteTicker() {
     return () => clearInterval(iv)
   }, [])
   return (
-    <div className="shrink-0 flex items-center justify-center overflow-hidden py-3 px-6"
-      style={{ background: 'rgba(30,20,70,0.92)', borderTop: '1px solid rgba(139,92,246,0.4)' }}>
-      <span className="text-[11px] font-bold uppercase tracking-widest mr-3 shrink-0" style={{ color: '#a78bfa' }}>✦ AI says</span>
+    <div className="shrink-0 flex flex-col items-center justify-center overflow-hidden py-6 px-10"
+      style={{ background: 'rgba(30,20,70,0.92)', borderTop: '2px solid rgba(139,92,246,0.5)' }}>
+      <span className="text-base font-black uppercase tracking-widest mb-3" style={{ color: '#a78bfa' }}>✦ AI says</span>
       <AnimatePresence mode="wait">
         <motion.p
           key={idx}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
+          exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.4 }}
-          className="text-sm font-semibold italic text-white text-center"
+          className="text-4xl font-bold italic text-white text-center leading-snug"
         >
           &ldquo;{QUOTES[idx]}&rdquo;
         </motion.p>
