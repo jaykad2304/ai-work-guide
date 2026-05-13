@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from backend.database import init_db
 from backend.config import config
-from backend.routes import timeline, search, insights, export
+from backend.routes import timeline, search, insights, export, events
 from backend.models import Event
 
 @asynccontextmanager
@@ -32,32 +32,35 @@ app.include_router(timeline.router)
 app.include_router(search.router)
 app.include_router(insights.router)
 app.include_router(export.router)
+app.include_router(events.router)
 
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
 @app.post("/rescan")
-async def rescan_claude_cli(db = None):
-    """Scan Claude CLI for AI tool usage"""
+async def rescan_all():
+    """Scan all configured collectors for AI tool usage"""
     from backend.database import SessionLocal
-    from backend.parsers.claude_cli_parser import ClaudeCliParser
+    from backend.collectors.registry import load_collectors
 
     db = SessionLocal()
     try:
-        # Parse Claude CLI sessions
-        cli_parser = ClaudeCliParser(db)
-        cli_events = cli_parser.parse_all_sessions()
-        print(f"✓ Parsed {len(cli_events)} Claude CLI sessions")
+        collectors = load_collectors()
+        total = 0
+        by_tool = {}
 
-        # Update metadata
-        cli_parser.update_daily_metadata()
+        for collector in collectors:
+            new_events = collector.parse_all(db)
+            by_tool[collector.tool_name] = len(new_events)
+            total += len(new_events)
+            if len(new_events) > 0:
+                print(f"✓ Parsed {len(new_events)} {collector.tool_name} sessions")
 
         return {
             "status": "success",
-            "parsed_cli_events": len(cli_events),
-            "total_events": len(cli_events),
-            "message": f"Parsed {len(cli_events)} Claude CLI sessions"
+            "total_events": total,
+            "by_tool": by_tool
         }
     finally:
         db.close()

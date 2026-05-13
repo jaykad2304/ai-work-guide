@@ -1,0 +1,18 @@
+# AI Observability Collectors Configuration
+# List which data collectors are enabled and their configuration
+
+collectors:
+  - name: claude_cli
+    enabled: true
+    # Watches: ~/.claude/sessions/*.json
+
+  - name: codex_cli
+    enabled: true
+    # Watches: ~/.codex/sessions/YYYY/MM/DD/*.jsonl
+
+# To add a new tool:
+#   1. Create backend/collectors/my_tool.py with a class extending BaseCollector
+#   2. Register it in BUILT_IN_COLLECTORS in backend/collectors/registry.py
+#   3. Add an entry here:
+#   - name: my_tool
+#     enabled: true
