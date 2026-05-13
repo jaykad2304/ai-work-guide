@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Brain, BarChart3, FolderOpen, Calendar, Search, Lightbulb } from 'lucide-react'
+import { Brain, BarChart3, FolderOpen, Calendar, Search, Lightbulb, Info } from 'lucide-react'
 
 const NAV = [
   { id: 'dashboard', icon: BarChart3,  label: 'Dashboard', color: '#818cf8' },
@@ -8,6 +8,7 @@ const NAV = [
   { id: 'timeline',  icon: Calendar,   label: 'Timeline',  color: '#fb923c' },
   { id: 'search',    icon: Search,     label: 'Search',    color: '#2dd4bf' },
   { id: 'insights',  icon: Lightbulb,  label: 'Insights',  color: '#f472b6' },
+  { id: 'about',     icon: Info,       label: 'About',     color: '#34d399' },
 ]
 
 function fmt(d) {

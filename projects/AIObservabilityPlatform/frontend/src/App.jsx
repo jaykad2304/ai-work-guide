@@ -8,6 +8,7 @@ import ProjectsView from './components/ProjectsView'
 import TimelineView from './components/TimelineView'
 import SearchView from './components/SearchView'
 import InsightsView from './components/InsightsView'
+import AboutView from './components/AboutView'
 
 const VIEWS = {
   dashboard: Dashboard,
@@ -15,6 +16,7 @@ const VIEWS = {
   timeline:  TimelineView,
   search:    SearchView,
   insights:  InsightsView,
+  about:     AboutView,
 }
 
 const MESSAGES = [
