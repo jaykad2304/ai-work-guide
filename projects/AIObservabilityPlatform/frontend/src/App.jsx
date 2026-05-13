@@ -25,8 +25,8 @@ const MESSAGES = [
 ]
 
 export default function App() {
-  const [view, setView]       = useState('dashboard')
-  const [days, setDays]       = useState(30)
+  const [view, setView]         = useState('dashboard')
+  const [days, setDays]         = useState(30)
   const [timeline, setTimeline] = useState(null)
   const [loading, setLoading]   = useState(true)
   const [msgIdx, setMsgIdx]     = useState(0)
@@ -39,12 +39,8 @@ export default function App() {
         const res = await timelineAPI.getTimeline(days)
         setTimeline(res.data)
         await insightsAPI.generateInsights()
-      } catch (e) {
-        console.error(e)
-      } finally {
-        clearInterval(iv)
-        setLoading(false)
-      }
+      } catch (e) { console.error(e) }
+      finally { clearInterval(iv); setLoading(false) }
     }
     init()
     return () => clearInterval(iv)
@@ -58,67 +54,53 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-white">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="w-20 h-20 mx-auto mb-8 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-200"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-          >
-            <span className="text-4xl">🧠</span>
-          </motion.div>
-
-          <h1 className="text-3xl font-black text-slate-900 mb-2">AI Observer</h1>
-
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={msgIdx}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="text-slate-500 font-medium text-base mb-8"
+      <>
+        <div className="app-bg" />
+        <div className="page-root flex items-center justify-center h-screen">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1], boxShadow: ['0 0 30px rgba(99,102,241,0.3)', '0 0 60px rgba(139,92,246,0.5)', '0 0 30px rgba(99,102,241,0.3)'] }}
+              transition={{ repeat: Infinity, duration: 2.2 }}
+              className="w-20 h-20 mx-auto mb-8 rounded-2xl glass-strong flex items-center justify-center"
             >
-              {MESSAGES[msgIdx]}
-            </motion.p>
-          </AnimatePresence>
-
-          <div className="flex justify-center gap-2">
-            {[0, 1, 2].map(i => (
-              <motion.div
-                key={i}
-                className="w-2.5 h-2.5 rounded-full bg-indigo-500"
-                animate={{ y: [0, -10, 0], opacity: [0.4, 1, 0.4] }}
-                transition={{ repeat: Infinity, duration: 1.1, delay: i * 0.2 }}
-              />
-            ))}
-          </div>
-        </motion.div>
-      </div>
+              <span className="text-4xl">🧠</span>
+            </motion.div>
+            <h1 className="text-3xl font-black text-white mb-2 tracking-tight">AI Observer</h1>
+            <AnimatePresence mode="wait">
+              <motion.p key={msgIdx} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                className="text-slate-400 font-medium text-sm mb-8">{MESSAGES[msgIdx]}</motion.p>
+            </AnimatePresence>
+            <div className="flex justify-center gap-2">
+              {[0,1,2].map(i => (
+                <motion.div key={i} className="w-2 h-2 rounded-full bg-indigo-400"
+                  animate={{ y: [0, -8, 0], opacity: [0.3, 1, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 1.1, delay: i * 0.18 }} />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      <Sidebar activeView={view} onNavigate={setView} />
-      <main className="flex-1 overflow-y-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={view}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.2 }}
-          >
-            <ActiveView timeline={timeline} days={days} onDaysChange={setDays} />
-          </motion.div>
-        </AnimatePresence>
-      </main>
-    </div>
+    <>
+      {/* Fixed background — visible through glass cards */}
+      <div className="app-bg" />
+
+      <div className="page-root flex h-screen overflow-hidden">
+        <Sidebar activeView={view} onNavigate={setView} />
+        <main className="flex-1 overflow-y-auto">
+          <AnimatePresence mode="wait">
+            <motion.div key={view}
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.22 }}
+            >
+              <ActiveView timeline={timeline} days={days} onDaysChange={setDays} />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+    </>
   )
 }
