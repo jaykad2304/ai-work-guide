@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Brain, Zap, FolderOpen, Search, Lightbulb, Database, Clock, BarChart3, Github } from 'lucide-react'
+import { Brain, Zap, FolderOpen, Search, Lightbulb, Database, Clock, BarChart3 } from 'lucide-react'
 
 const FEATURES = [
   { icon: BarChart3, color: '#818cf8', title: 'Dashboard',    desc: 'Real-time overview of your AI activity — sessions, tokens, active days, and daily charts.' },
