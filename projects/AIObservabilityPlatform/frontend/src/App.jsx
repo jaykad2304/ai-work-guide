@@ -28,21 +28,21 @@ const MESSAGES = [
 function QuoteTicker() {
   const [idx, setIdx] = useState(0)
   useEffect(() => {
-    const iv = setInterval(() => setIdx(i => (i + 1) % QUOTES.length), 4000)
+    const iv = setInterval(() => setIdx(i => (i + 1) % QUOTES.length), 4500)
     return () => clearInterval(iv)
   }, [])
   return (
-    <div className="shrink-0 h-9 flex items-center justify-center overflow-hidden"
-      style={{ background: 'rgba(5,6,22,0.7)', borderTop: '1px solid rgba(129,140,248,0.12)', backdropFilter: 'blur(20px)' }}>
+    <div className="shrink-0 flex items-center justify-center overflow-hidden py-3 px-6"
+      style={{ background: 'rgba(30,20,70,0.92)', borderTop: '1px solid rgba(139,92,246,0.4)' }}>
+      <span className="text-[11px] font-bold uppercase tracking-widest mr-3 shrink-0" style={{ color: '#a78bfa' }}>✦ AI says</span>
       <AnimatePresence mode="wait">
         <motion.p
           key={idx}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.45 }}
-          className="text-xs font-semibold italic px-6 text-center"
-          style={{ color: 'rgba(165,150,255,0.75)' }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.4 }}
+          className="text-sm font-semibold italic text-white text-center"
         >
           &ldquo;{QUOTES[idx]}&rdquo;
         </motion.p>
