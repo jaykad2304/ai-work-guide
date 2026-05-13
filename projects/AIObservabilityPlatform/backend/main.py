@@ -30,6 +30,26 @@ app.add_middleware(
 def health_check():
     return {"status": "ok"}
 
+@app.post("/rescan")
+async def rescan_claude_cli(db = None):
+    """Scan Claude CLI directory and parse new sessions"""
+    from backend.database import SessionLocal
+    from backend.parsers.claude_cli_parser import ClaudeCliParser
+
+    db = SessionLocal()
+    try:
+        parser = ClaudeCliParser(db)
+        events = parser.parse_all_sessions()
+        parser.update_daily_metadata()
+
+        return {
+            "status": "success",
+            "parsed_events": len(events),
+            "message": f"Parsed {len(events)} new sessions"
+        }
+    finally:
+        db.close()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
