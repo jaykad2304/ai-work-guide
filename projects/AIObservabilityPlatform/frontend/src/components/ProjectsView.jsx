@@ -94,27 +94,27 @@ export default function ProjectsView({ days }) {
                           style={{ borderLeft:`2px solid ${color}30` }}>
                           <div className="flex items-start justify-between gap-5">
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-bold text-slate-200 truncate">{session.title||'Untitled'}</h4>
-                              {session.summary && <p className="text-xs text-slate-600 mt-1 line-clamp-2">{session.summary}</p>}
-                              <div className="flex flex-wrap gap-1.5 mt-2.5">
+                              <h4 className="text-2xl font-bold text-slate-200">{session.title||'Untitled'}</h4>
+                              {session.summary && <p className="text-lg text-slate-500 mt-1.5 line-clamp-2">{session.summary}</p>}
+                              <div className="flex flex-wrap gap-2 mt-3">
                                 {(session.topics||[]).slice(0,5).map(t => (
-                                  <span key={t} className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full text-slate-400"
+                                  <span key={t} className="flex items-center gap-1.5 text-base font-semibold px-3 py-1 rounded-full text-slate-300"
                                     style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.08)' }}>
-                                    <Tag style={{width:9,height:9}} />{t}
+                                    <Tag style={{width:12,height:12}} />{t}
                                   </span>
                                 ))}
                               </div>
                             </div>
-                            <div className="shrink-0 text-right space-y-1.5">
-                              <div className="flex items-center gap-1.5 justify-end">
-                                <Zap style={{width:13,height:13,color:'#fbbf24'}} />
-                                <span className="text-xs font-bold text-amber-400">{(session.tokens_used||0).toLocaleString()}</span>
+                            <div className="shrink-0 text-right space-y-2">
+                              <div className="flex items-center gap-2 justify-end">
+                                <Zap style={{width:18,height:18,color:'#fbbf24'}} />
+                                <span className="text-xl font-bold text-amber-400">{(session.tokens_used||0).toLocaleString()}</span>
                               </div>
-                              <div className="flex items-center gap-1.5 justify-end text-slate-600">
-                                <Clock style={{width:12,height:12}} />
-                                <span className="text-xs font-semibold">{session.duration_minutes}m</span>
+                              <div className="flex items-center gap-2 justify-end text-slate-500">
+                                <Clock style={{width:16,height:16}} />
+                                <span className="text-lg font-semibold">{session.duration_minutes}m</span>
                               </div>
-                              <p className="text-[10px] font-semibold text-slate-600">{session.timestamp?.slice(0,10)}</p>
+                              <p className="text-base font-semibold text-slate-500">{session.timestamp?.slice(0,10)}</p>
                             </div>
                           </div>
                         </motion.div>

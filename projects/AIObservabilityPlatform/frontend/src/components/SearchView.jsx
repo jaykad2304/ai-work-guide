@@ -108,27 +108,27 @@ export default function SearchView() {
                     style={{ border:'1px solid rgba(255,255,255,0.07)' }}>
                     <div className="flex items-start justify-between gap-5">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-black text-white mb-1">{event.title||'Untitled'}</h3>
-                        {event.summary && <p className="text-xs text-slate-500 line-clamp-2 mb-3">{event.summary}</p>}
-                        <div className="flex flex-wrap gap-1.5">
+                        <h3 className="text-2xl font-black text-white mb-2">{event.title||'Untitled'}</h3>
+                        {event.summary && <p className="text-lg text-slate-500 line-clamp-2 mb-3">{event.summary}</p>}
+                        <div className="flex flex-wrap gap-2">
                           {(event.topics||[]).map(t => (
-                            <span key={t} className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                            <span key={t} className="flex items-center gap-1.5 text-base font-semibold px-3 py-1 rounded-full"
                               style={{ color:'#818cf8', background:'rgba(129,140,248,0.1)', border:'1px solid rgba(129,140,248,0.18)' }}>
-                              <Tag style={{width:9,height:9}} />{t}
+                              <Tag style={{width:12,height:12}} />{t}
                             </span>
                           ))}
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <span className="inline-block text-[10px] font-bold px-3 py-1.5 rounded-lg mb-2"
+                        <span className="inline-block text-base font-bold px-3 py-1.5 rounded-lg mb-2"
                           style={{ color:'#2dd4bf', background:'rgba(45,212,191,0.1)', border:'1px solid rgba(45,212,191,0.2)' }}>
                           {event.tool}
                         </span>
-                        <div className="flex items-center gap-1.5 justify-end">
-                          <Zap style={{width:12,height:12,color:'#fbbf24'}} />
-                          <span className="text-xs font-bold text-amber-400">{(event.tokens_used||0).toLocaleString()}</span>
+                        <div className="flex items-center gap-2 justify-end">
+                          <Zap style={{width:16,height:16,color:'#fbbf24'}} />
+                          <span className="text-xl font-bold text-amber-400">{(event.tokens_used||0).toLocaleString()}</span>
                         </div>
-                        <p className="text-[10px] font-semibold text-slate-600 mt-1.5">{event.timestamp?.slice(0,10)}</p>
+                        <p className="text-base font-semibold text-slate-500 mt-2">{event.timestamp?.slice(0,10)}</p>
                       </div>
                     </div>
                   </motion.div>

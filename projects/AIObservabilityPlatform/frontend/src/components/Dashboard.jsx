@@ -156,26 +156,26 @@ export default function Dashboard({ timeline, days, onDaysChange }) {
               whileHover={{ backgroundColor: 'rgba(129,140,248,0.04)' }}
               className="grid grid-cols-12 gap-4 px-6 py-3.5 border-b border-white/[0.03] last:border-0 cursor-pointer transition-colors duration-150">
               <div className="col-span-5 min-w-0">
-                <p className="text-sm font-bold text-slate-200 truncate">{event.title || 'Untitled Session'}</p>
-                {event.summary && <p className="text-[11px] text-slate-600 truncate mt-0.5">{event.summary}</p>}
+                <p className="text-2xl font-bold text-slate-200">{event.title || 'Untitled Session'}</p>
+                {event.summary && <p className="text-lg text-slate-500 mt-1">{event.summary}</p>}
               </div>
-              <div className="col-span-2 flex flex-wrap gap-1 items-start pt-0.5">
+              <div className="col-span-2 flex flex-wrap gap-1.5 items-start pt-1">
                 {(event.topics||[]).slice(0,2).map(t => (
-                  <span key={t} className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                  <span key={t} className="text-base font-bold px-3 py-1 rounded"
                     style={{ background:'rgba(129,140,248,0.12)', color:'#818cf8', border:'1px solid rgba(129,140,248,0.15)' }}>{t}</span>
                 ))}
               </div>
-              <div className="col-span-2 text-center flex justify-center items-start pt-0.5">
-                <span className="flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded"
+              <div className="col-span-2 text-center flex justify-center items-start pt-1">
+                <span className="flex items-center gap-1.5 text-lg font-bold px-3 py-1 rounded"
                   style={{ background:'rgba(251,191,36,0.1)', color:'#fbbf24', border:'1px solid rgba(251,191,36,0.15)' }}>
-                  <Zap style={{width:10,height:10}} />{(event.tokens_used||0).toLocaleString()}
+                  <Zap style={{width:16,height:16}} />{(event.tokens_used||0).toLocaleString()}
                 </span>
               </div>
               <div className="col-span-2 text-center">
-                <span className="text-[11px] font-mono font-semibold text-slate-600">{event.duration_minutes}m</span>
+                <span className="text-lg font-mono font-semibold text-slate-500">{event.duration_minutes}m</span>
               </div>
               <div className="col-span-1 text-right">
-                <span className="text-[10px] font-mono font-semibold text-slate-700">{event.timestamp?.slice(5,10)}</span>
+                <span className="text-base font-mono font-semibold text-slate-500">{event.timestamp?.slice(5,10)}</span>
               </div>
             </motion.div>
           ))}
