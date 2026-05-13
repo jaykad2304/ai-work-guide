@@ -20,7 +20,7 @@ export default function ProjectsView({ days }) {
   const toggle = name => setExpanded(p => ({ ...p, [name]: !p[name] }))
 
   return (
-    <div className="p-8 lg:p-10 min-h-screen">
+    <div className="p-6 lg:p-8 min-h-screen">
       <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }} className="flex items-start justify-between mb-10">
         <div>
           <h1 className="text-4xl font-black text-white tracking-tight leading-none mb-1.5">Projects</h1>

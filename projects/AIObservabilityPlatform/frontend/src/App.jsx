@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { parserAPI, timelineAPI, insightsAPI } from './api'
-import Sidebar from './components/Sidebar'
+import Topbar from './components/Topbar'
 import Dashboard from './components/Dashboard'
 import ProjectsView from './components/ProjectsView'
 import TimelineView from './components/TimelineView'
@@ -56,23 +56,23 @@ export default function App() {
     return (
       <>
         <div className="app-bg" />
-        <div className="page-root flex items-center justify-center h-screen">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+        <div className="page-root items-center justify-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
             <motion.div
-              animate={{ scale: [1, 1.1, 1], boxShadow: ['0 0 30px rgba(99,102,241,0.3)', '0 0 60px rgba(139,92,246,0.5)', '0 0 30px rgba(99,102,241,0.3)'] }}
+              animate={{ scale: [1, 1.08, 1], boxShadow: ['0 0 24px rgba(99,102,241,0.35)', '0 0 52px rgba(139,92,246,0.55)', '0 0 24px rgba(99,102,241,0.35)'] }}
               transition={{ repeat: Infinity, duration: 2.2 }}
-              className="w-20 h-20 mx-auto mb-8 rounded-2xl glass-strong flex items-center justify-center"
+              className="w-16 h-16 mx-auto mb-7 rounded-2xl glass flex items-center justify-center"
             >
-              <span className="text-4xl">🧠</span>
+              <span className="text-3xl">🧠</span>
             </motion.div>
-            <h1 className="text-3xl font-black text-white mb-2 tracking-tight">AI Observer</h1>
+            <h1 className="text-2xl font-black text-white mb-2 tracking-tight">AI Observer</h1>
             <AnimatePresence mode="wait">
-              <motion.p key={msgIdx} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                className="text-slate-400 font-medium text-sm mb-8">{MESSAGES[msgIdx]}</motion.p>
+              <motion.p key={msgIdx} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                className="text-slate-500 text-sm font-medium mb-7">{MESSAGES[msgIdx]}</motion.p>
             </AnimatePresence>
             <div className="flex justify-center gap-2">
               {[0,1,2].map(i => (
-                <motion.div key={i} className="w-2 h-2 rounded-full bg-indigo-400"
+                <motion.div key={i} className="w-2 h-2 rounded-full" style={{ background: '#6366f1' }}
                   animate={{ y: [0, -8, 0], opacity: [0.3, 1, 0.3] }}
                   transition={{ repeat: Infinity, duration: 1.1, delay: i * 0.18 }} />
               ))}
@@ -85,16 +85,17 @@ export default function App() {
 
   return (
     <>
-      {/* Fixed background — visible through glass cards */}
       <div className="app-bg" />
-
-      <div className="page-root flex h-screen overflow-hidden">
-        <Sidebar activeView={view} onNavigate={setView} />
+      <div className="page-root">
+        <Topbar activeView={view} onNavigate={setView} />
         <main className="flex-1 overflow-y-auto">
           <AnimatePresence mode="wait">
-            <motion.div key={view}
-              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.22 }}
+            <motion.div
+              key={view}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
             >
               <ActiveView timeline={timeline} days={days} onDaysChange={setDays} />
             </motion.div>

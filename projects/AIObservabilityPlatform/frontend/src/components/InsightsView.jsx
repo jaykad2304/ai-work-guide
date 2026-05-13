@@ -20,7 +20,7 @@ export default function InsightsView() {
   const fade    = { hidden:{ opacity:0, y:16 }, show:{ opacity:1, y:0, transition:{ duration:0.4 } } }
 
   return (
-    <div className="p-8 lg:p-10 min-h-screen">
+    <div className="p-6 lg:p-8 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }} className="mb-10">
           <h1 className="text-4xl font-black text-white tracking-tight leading-none mb-1.5">Insights</h1>
