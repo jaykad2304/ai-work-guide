@@ -1,30 +1,60 @@
 import React, { useState, useEffect } from 'react'
 import { parserAPI, timelineAPI, insightsAPI } from './api'
-import { getRandomQuote } from './constants/quotes'
+import { Header } from './components/Header'
+import { FilterBar } from './components/FilterBar'
+import { TimelineDay } from './components/TimelineDay'
+import { EmptyState } from './components/EmptyState'
 
 function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [timeline, setTimeline] = useState(null)
-  const [quote, setQuote] = useState(getRandomQuote())
+  const [days, setDays] = useState(30)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
+  const fetchTimeline = async (daysValue) => {
+    try {
+      const timelineResult = await timelineAPI.getTimeline(daysValue)
+      setTimeline(timelineResult.data)
+      setError(null)
+    } catch (err) {
+      setError(err.message || 'Failed to load timeline')
+      console.error(err)
+    }
+  }
+
+  const handleRescan = async () => {
+    setIsRefreshing(true)
+    try {
+      const parseResult = await parserAPI.rescan()
+      console.log('✓ Data rescanned:', parseResult.data)
+      await fetchTimeline(days)
+      await insightsAPI.generateInsights()
+    } catch (err) {
+      setError(err.message || 'Failed to rescan data')
+      console.error(err)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
+  // Initial load: rescan once, then fetch timeline and insights
   useEffect(() => {
     const initializeApp = async () => {
       try {
         setLoading(true)
+        setError(null)
 
-        // Parse Claude CLI data
+        // Parse Claude CLI data once
         const parseResult = await parserAPI.rescan()
-        console.log('✓ Data parsed:', parseResult.data)
+        console.log('✓ Initial data parsed:', parseResult.data)
 
         // Get timeline
-        const timelineResult = await timelineAPI.getTimeline(30)
+        const timelineResult = await timelineAPI.getTimeline(days)
         setTimeline(timelineResult.data)
 
         // Generate insights
         await insightsAPI.generateInsights()
-
-        setQuote(getRandomQuote())
       } catch (err) {
         setError(err.message || 'Failed to load data')
         console.error(err)
@@ -36,6 +66,13 @@ function App() {
     initializeApp()
   }, [])
 
+  // When days change, only refetch timeline (not rescan)
+  useEffect(() => {
+    if (timeline) {
+      fetchTimeline(days)
+    }
+  }, [days])
+
   if (loading) {
     return (
       <div className="loading">
@@ -45,7 +82,7 @@ function App() {
     )
   }
 
-  if (error) {
+  if (error && !timeline) {
     return (
       <div className="app">
         <div className="error">
@@ -57,62 +94,50 @@ function App() {
     )
   }
 
+  const stats = {
+    total_events: timeline?.total_events || 0,
+    total_tokens: timeline?.events?.reduce((sum, e) => sum + (e.tokens_used || 0), 0) || 0,
+    top_topic: timeline?.daily_summaries?.[0]?.primary_topics?.split(',')?.[0] || 'N/A'
+  }
+
   return (
     <div className="app">
-      <div className="navbar">
-        <h1>🧠 AI Observability Platform</h1>
-        <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-          {timeline?.total_events || 0} conversations tracked
-        </span>
-      </div>
-
-      <div className="quote">{quote}</div>
+      <Header stats={stats} />
 
       {timeline && (
-        <div className="timeline-container">
-          <h2 style={{ marginBottom: '2rem', color: '#94a3b8' }}>
-            Timeline ({timeline.days_shown} days)
-          </h2>
+        <>
+          <FilterBar
+            days={days}
+            onDaysChange={setDays}
+            onRefresh={handleRescan}
+            totalEvents={timeline.total_events}
+          />
 
-          {timeline.daily_summaries.length === 0 ? (
-            <div className="error">No activity found. Start using Claude CLI to see your timeline!</div>
-          ) : (
-            timeline.daily_summaries.map((day) => (
-              <div key={day.date} className="day-card">
-                <div className="day-header">
-                  <div>
-                    <h3 style={{ color: '#f1f5f9' }}>{day.date}</h3>
-                    <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>{day.daily_summary}</p>
-                  </div>
-                  <div className="day-stats">
-                    <span>Sessions: {day.total_events}</span>
-                    <span>Tokens: {day.total_tokens}</span>
-                    <span>Activity: {Math.round(day.activity_score)}%</span>
-                  </div>
-                </div>
-
-                {timeline.events
-                  .filter((e) => e.timestamp.startsWith(day.date))
-                  .map((event) => (
-                    <div key={event.session_id} className="session">
-                      <div className="session-title">{event.title}</div>
-                      <div className="session-meta">
-                        <span>🛠️ {event.tool}</span>
-                        <span>⏱️ {event.duration_minutes} min</span>
-                        <span>🔤 {event.tokens_used} tokens</span>
-                        <span>📌 {event.topics.join(', ')}</span>
-                      </div>
-                      {event.summary && (
-                        <p style={{ fontSize: '0.9rem', color: '#cbd5e1', marginTop: '0.5rem' }}>
-                          {event.summary.substring(0, 100)}...
-                        </p>
-                      )}
-                    </div>
-                  ))}
+          <div className="app-container">
+            {error && (
+              <div className="error" style={{ margin: '2rem' }}>
+                <p>{error}</p>
               </div>
-            ))
-          )}
-        </div>
+            )}
+
+            {timeline.daily_summaries.length === 0 ? (
+              <EmptyState onRefresh={handleRescan} />
+            ) : (
+              <div className="timeline-container">
+                <h2 className="timeline-title">
+                  Timeline ({timeline.days_shown} days)
+                </h2>
+                {timeline.daily_summaries.map((day) => (
+                  <TimelineDay
+                    key={day.date}
+                    day={day}
+                    events={timeline.events}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   )

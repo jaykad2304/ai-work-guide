@@ -96,7 +96,7 @@ def forecast_currency_position(transactions_df, forecast_df):
     Shows: On each day, how much cash in each currency is waiting to settle?
     Helps identify where cash gets stuck in "wrong" currencies.
 
-    Problem it solves: Boku holds $10B across 50+ currencies. You might have
+    Problem it solves: Comapany holds $10B across 50+ currencies. You might have
     ₹50M waiting to settle but urgently need £2M to pay UK partners.
     Without visibility, you don't know if you can make the payment or need to convert.
 

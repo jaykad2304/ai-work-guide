@@ -168,7 +168,7 @@ Boku Settlement API Connector - Production Architecture
 ## Next Steps (Production Deployment)
 
 1. Get Boku API key from engineering team
-2. Set `BOKU_API_KEY` environment variable
+2. Set `COMPANY_API_KEY` environment variable
 3. Change `use_mock=False` in app.py
 4. Add pagination handling for large datasets
 5. Implement caching layer (Redis) for high-frequency queries

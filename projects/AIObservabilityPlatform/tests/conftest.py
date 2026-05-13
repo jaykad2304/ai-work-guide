@@ -1,6 +1,6 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from backend.models import Base
 from backend.database import get_db
 from backend.main import app
@@ -21,8 +21,9 @@ def test_db():
             db.close()
 
     app.dependency_overrides[get_db] = override_get_db
-    yield SessionLocal()
-
+    db = SessionLocal()
+    yield db
+    db.close()
     Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture

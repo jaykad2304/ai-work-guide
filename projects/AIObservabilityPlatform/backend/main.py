@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from backend.database import init_db
 from backend.config import config
+from backend.routes import timeline, search, insights, export
+from backend.models import Event
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,26 +28,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(timeline.router)
+app.include_router(search.router)
+app.include_router(insights.router)
+app.include_router(export.router)
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
 @app.post("/rescan")
 async def rescan_claude_cli(db = None):
-    """Scan Claude CLI directory and parse new sessions"""
+    """Scan Claude CLI for AI tool usage"""
     from backend.database import SessionLocal
     from backend.parsers.claude_cli_parser import ClaudeCliParser
 
     db = SessionLocal()
     try:
-        parser = ClaudeCliParser(db)
-        events = parser.parse_all_sessions()
-        parser.update_daily_metadata()
+        # Parse Claude CLI sessions
+        cli_parser = ClaudeCliParser(db)
+        cli_events = cli_parser.parse_all_sessions()
+        print(f"✓ Parsed {len(cli_events)} Claude CLI sessions")
+
+        # Update metadata
+        cli_parser.update_daily_metadata()
 
         return {
             "status": "success",
-            "parsed_events": len(events),
-            "message": f"Parsed {len(events)} new sessions"
+            "parsed_cli_events": len(cli_events),
+            "total_events": len(cli_events),
+            "message": f"Parsed {len(cli_events)} Claude CLI sessions"
         }
     finally:
         db.close()

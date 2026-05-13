@@ -74,6 +74,6 @@ if all_good:
     print("✅ All checks passed! Ready to run:")
     print("\n   streamlit run app.py\n")
 else:
-    print("❌ Some checks failed. Run:")
+    print(" Some checks failed. Run:")
     print("\n   pip install -r requirements.txt\n")
 print("=" * 60)
