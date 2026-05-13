@@ -63,7 +63,7 @@ export default function Topbar({ activeView, onNavigate }) {
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate(item.id)}
-              className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200"
+              className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all duration-200"
               style={active ? {
                 color: item.color,
                 background: `${item.color}18`,
@@ -74,7 +74,7 @@ export default function Topbar({ activeView, onNavigate }) {
               }}
             >
               <Icon style={{ width: 14, height: 14 }} />
-              <span className="hidden md:block">{item.label}</span>
+              <span>{item.label}</span>
               {active && (
                 <motion.div
                   layoutId="topbar-active"

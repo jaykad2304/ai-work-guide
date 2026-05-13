@@ -1,4 +1,4 @@
-const QUOTES = [
+export const QUOTES = [
   "Your AI journey: where tokens flow like water and decisions linger like ghosts.",
   "I see you've been productive. Mostly talking to AI. That's... something.",
   "Another day, another thousand tokens burned for wisdom.",

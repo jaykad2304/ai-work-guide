@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { parserAPI, timelineAPI, insightsAPI } from './api'
+import { QUOTES } from './constants/quotes'
 import Topbar from './components/Topbar'
 import Dashboard from './components/Dashboard'
 import ProjectsView from './components/ProjectsView'
@@ -23,6 +24,48 @@ const MESSAGES = [
   'Building your timeline...',
   'Almost ready...',
 ]
+
+function FloatingQuotes() {
+  const positions = useRef(
+    QUOTES.slice(0, 7).map((_, i) => ({
+      x: 5 + (i * 13) % 80,
+      y: 10 + (i * 17) % 75,
+      delay: i * 0.35,
+      duration: 5 + (i % 3) * 2,
+    }))
+  )
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+      {QUOTES.slice(0, 7).map((quote, i) => {
+        const p = positions.current[i]
+        return (
+          <motion.div
+            key={i}
+            className="absolute max-w-xs px-4 py-2.5 rounded-2xl text-xs font-semibold italic text-slate-300"
+            style={{
+              left: `${p.x}%`,
+              top:  `${p.y}%`,
+              background: 'rgba(10,12,40,0.5)',
+              border: '1px solid rgba(129,140,248,0.18)',
+              backdropFilter: 'blur(12px)',
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: [0, 0.85, 0.85, 0], y: [20, 0, 0, -20] }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              repeatDelay: 1.5,
+              ease: 'easeInOut',
+            }}
+          >
+            &ldquo;{quote}&rdquo;
+          </motion.div>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function App() {
   const [view, setView]         = useState('dashboard')
@@ -56,8 +99,9 @@ export default function App() {
     return (
       <>
         <div className="app-bg" />
-        <div className="page-root items-center justify-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+        <div className="page-root items-center justify-center" style={{ position: 'relative' }}>
+          <FloatingQuotes />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center relative z-10">
             <motion.div
               animate={{ scale: [1, 1.08, 1], boxShadow: ['0 0 24px rgba(99,102,241,0.35)', '0 0 52px rgba(139,92,246,0.55)', '0 0 24px rgba(99,102,241,0.35)'] }}
               transition={{ repeat: Infinity, duration: 2.2 }}
@@ -65,10 +109,10 @@ export default function App() {
             >
               <span className="text-3xl">🧠</span>
             </motion.div>
-            <h1 className="text-2xl font-black text-white mb-2 tracking-tight">AI Observer</h1>
+            <h1 className="text-3xl font-black text-white mb-2 tracking-tight">AI Observer</h1>
             <AnimatePresence mode="wait">
               <motion.p key={msgIdx} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-                className="text-slate-500 text-sm font-medium mb-7">{MESSAGES[msgIdx]}</motion.p>
+                className="text-slate-400 text-sm font-semibold mb-7">{MESSAGES[msgIdx]}</motion.p>
             </AnimatePresence>
             <div className="flex justify-center gap-2">
               {[0,1,2].map(i => (
