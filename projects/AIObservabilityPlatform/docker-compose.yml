@@ -1,21 +1,43 @@
 version: '3.8'
 
 services:
-  app:
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.backend
+    container_name: ai-observer-backend
     ports:
-      - "3000:8000"
       - "8000:8000"
     volumes:
-      - ~/.claude:/root/.claude:ro
+      - ${HOME}/.claude:/root/.claude:ro
+      - ${HOME}/.codex:/root/.codex:ro
       - ./data:/app/data
     environment:
-      - DATABASE_URL=sqlite:///./data/timeline.db
-      - DEBUG=False
+      - DATABASE_URL=sqlite:////app/data/timeline.db
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
       retries: 3
+      start_period: 10s
+    networks:
+      - ai-observer
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: ai-observer-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8000
+    networks:
+      - ai-observer
+
+networks:
+  ai-observer:
+    driver: bridge
