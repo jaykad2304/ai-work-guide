@@ -1,146 +1,71 @@
 import React, { useState, useEffect } from 'react'
 import { parserAPI, timelineAPI, insightsAPI } from './api'
-import { Header } from './components/Header'
-import { FilterBar } from './components/FilterBar'
-import { TimelineDay } from './components/TimelineDay'
-import { EmptyState } from './components/EmptyState'
+import Sidebar from './components/Sidebar'
+import Dashboard from './components/Dashboard'
+import ProjectsView from './components/ProjectsView'
+import TimelineView from './components/TimelineView'
+import SearchView from './components/SearchView'
+import InsightsView from './components/InsightsView'
 
-function App() {
+const VIEWS = {
+  dashboard: Dashboard,
+  projects: ProjectsView,
+  timeline: TimelineView,
+  search: SearchView,
+  insights: InsightsView
+}
+
+export default function App() {
+  const [view, setView] = useState('dashboard')
+  const [days, setDays] = useState(30)
+  const [timeline, setTimeline] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [timeline, setTimeline] = useState(null)
-  const [days, setDays] = useState(30)
-  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const fetchTimeline = async (daysValue) => {
-    try {
-      const timelineResult = await timelineAPI.getTimeline(daysValue)
-      setTimeline(timelineResult.data)
-      setError(null)
-    } catch (err) {
-      setError(err.message || 'Failed to load timeline')
-      console.error(err)
-    }
-  }
-
-  const handleRescan = async () => {
-    setIsRefreshing(true)
-    try {
-      const parseResult = await parserAPI.rescan()
-      console.log('✓ Data rescanned:', parseResult.data)
-      await fetchTimeline(days)
-      await insightsAPI.generateInsights()
-    } catch (err) {
-      setError(err.message || 'Failed to rescan data')
-      console.error(err)
-    } finally {
-      setIsRefreshing(false)
-    }
-  }
-
-  // Initial load: rescan once, then fetch timeline and insights
   useEffect(() => {
-    const initializeApp = async () => {
+    const init = async () => {
       try {
-        setLoading(true)
-        setError(null)
-
-        // Parse Claude CLI data once
-        const parseResult = await parserAPI.rescan()
-        console.log('✓ Initial data parsed:', parseResult.data)
-
-        // Get timeline
-        const timelineResult = await timelineAPI.getTimeline(days)
-        setTimeline(timelineResult.data)
-
-        // Generate insights
+        await parserAPI.rescan()
+        const res = await timelineAPI.getTimeline(days)
+        setTimeline(res.data)
         await insightsAPI.generateInsights()
-      } catch (err) {
-        setError(err.message || 'Failed to load data')
-        console.error(err)
+      } catch (e) {
+        console.error(e)
+        setError(e.message || 'Failed to load data')
       } finally {
         setLoading(false)
       }
     }
-
-    initializeApp()
+    init()
   }, [])
 
-  // When days change, only refetch timeline (not rescan)
   useEffect(() => {
     if (timeline) {
-      fetchTimeline(days)
+      timelineAPI.getTimeline(days).then(r => setTimeline(r.data))
     }
   }, [days])
 
-  if (loading) {
-    return (
-      <div className="loading">
-        <div className="spinner"></div>
-        <p>Scanning your AI journey...</p>
-      </div>
-    )
-  }
-
-  if (error && !timeline) {
-    return (
-      <div className="app">
-        <div className="error">
-          <h2>⚠️ Error Loading Data</h2>
-          <p>{error}</p>
-          <p>Make sure the backend is running on http://localhost:8000</p>
-        </div>
-      </div>
-    )
-  }
-
-  const stats = {
-    total_events: timeline?.total_events || 0,
-    total_tokens: timeline?.events?.reduce((sum, e) => sum + (e.tokens_used || 0), 0) || 0,
-    top_topic: timeline?.daily_summaries?.[0]?.primary_topics?.split(',')?.[0] || 'N/A'
-  }
+  const ActiveView = VIEWS[view]
 
   return (
-    <div className="app">
-      <Header stats={stats} />
-
-      {timeline && (
-        <>
-          <FilterBar
-            days={days}
-            onDaysChange={setDays}
-            onRefresh={handleRescan}
-            totalEvents={timeline.total_events}
-          />
-
-          <div className="app-container">
-            {error && (
-              <div className="error" style={{ margin: '2rem' }}>
-                <p>{error}</p>
-              </div>
-            )}
-
-            {timeline.daily_summaries.length === 0 ? (
-              <EmptyState onRefresh={handleRescan} />
-            ) : (
-              <div className="timeline-container">
-                <h2 className="timeline-title">
-                  Timeline ({timeline.days_shown} days)
-                </h2>
-                {timeline.daily_summaries.map((day) => (
-                  <TimelineDay
-                    key={day.date}
-                    day={day}
-                    events={timeline.events}
-                  />
-                ))}
-              </div>
-            )}
+    <div className="flex h-screen bg-slate-50 font-sans">
+      <Sidebar activeView={view} onNavigate={setView} />
+      <main className="flex-1 overflow-y-auto">
+        {loading ? (
+          <div className="flex items-center justify-center h-full text-slate-500">
+            Loading your AI journey...
           </div>
-        </>
-      )}
+        ) : error && !timeline ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-red-600 mb-4">Error Loading Data</h2>
+              <p className="text-slate-600">{error}</p>
+            </div>
+          </div>
+        ) : (
+          <ActiveView timeline={timeline} days={days} onDaysChange={setDays} />
+        )}
+      </main>
     </div>
   )
 }
-
-export default App

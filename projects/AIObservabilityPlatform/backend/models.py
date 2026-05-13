@@ -13,6 +13,7 @@ class Event(Base):
     timestamp = Column(DateTime, nullable=False, index=True)
     tool = Column(String(50), nullable=False, index=True)
     session_id = Column(String(255), unique=True, nullable=False)
+    project = Column(String(255), nullable=True, index=True)
     title = Column(String(255), nullable=True)
     summary = Column(Text, nullable=True)
     topics = Column(String(500), nullable=True)
@@ -29,6 +30,7 @@ class Event(Base):
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
             'tool': self.tool,
             'session_id': self.session_id,
+            'project': self.project,
             'title': self.title,
             'summary': self.summary,
             'topics': self.topics.split(',') if self.topics else [],

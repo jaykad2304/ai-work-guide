@@ -32,6 +32,26 @@ async def get_timeline(
         "daily_summaries": [m.to_dict() for m in metadata_list]
     }
 
+@router.get("/by-project")
+async def get_by_project(days: int = 30, db: Session = Depends(get_db)):
+    """Get sessions grouped by project"""
+    cutoff = datetime.utcnow() - timedelta(days=days)
+    events = db.query(Event)\
+        .filter(Event.timestamp >= cutoff)\
+        .order_by(desc(Event.timestamp))\
+        .all()
+
+    projects = {}
+    for event in events:
+        key = event.project or 'unknown'
+        if key not in projects:
+            projects[key] = {'name': key, 'sessions': [], 'total_tokens': 0, 'total_sessions': 0}
+        projects[key]['sessions'].append(event.to_dict())
+        projects[key]['total_tokens'] += event.tokens_used or 0
+        projects[key]['total_sessions'] += 1
+
+    return {'projects': sorted(projects.values(), key=lambda x: x['total_sessions'], reverse=True)}
+
 @router.get("/{date}")
 async def get_day_details(date: str, db: Session = Depends(get_db)):
     """Get all sessions for a specific date (YYYY-MM-DD)"""

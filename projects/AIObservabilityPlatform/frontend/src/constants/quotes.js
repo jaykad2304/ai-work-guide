@@ -1,39 +1,26 @@
-export const sarcasticQuotes = [
-  "Another RAG conversation? You're really committed to the bit.",
-  "May 13: The day you asked about vector databases for the 47th time.",
-  "You asked Claude the same question 3 times. Feeling confident?",
-  "3 payment conversations in one day. Your fintech journey is inspiring.",
-  "You're really pushing the boundaries of AI observability. Or procrastinating.",
-  "Touch grass challenge: FAILED",
-  "Your AI journey: enlightening. Your sleep schedule: questionable.",
-  "API integration at 3 AM? Living that startup life, I see.",
-  "You've researched fine-tuning 8 times but haven't built anything yet.",
-  "Your longest session was 47 minutes. Brilliant or concerning?",
-  "You're discussing trading algorithms on your day off. Balance: 0/10",
-  "Another all-nighter working on agents? These are the stories you'll tell.",
-  "You asked about embeddings while on a meeting. Multitasking pro.",
-  "Vector databases on your mind 24/7. This is what passion looks like.",
-  "You've built 3 POCs this month. Follow-through: pending.",
-  "Your activity graph looks like a heartbeat. Are you okay?",
-  "Nobody has ever cared about LLMs this much. Except you.",
-  "You're debugging at 4 AM. Respect.",
-  "Peak productivity: Thursday at 2 PM. Consistent.",
-  "Your average session length: way too long. Touch grass.",
-  "RAG is love. RAG is life.",
-  "You're building an AI observability tool. Peak self-awareness.",
-  "Your timeline: fascinating. Your free time: nonexistent."
+const QUOTES = [
+  "Your AI journey: where tokens flow like water and decisions linger like ghosts.",
+  "I see you've been productive. Mostly talking to AI. That's... something.",
+  "Another day, another thousand tokens burned for wisdom.",
+  "The machines don't judge. Well, they do. But silently.",
+  "Consistency? You and I both know that's a myth.",
+  "At least the AI is listening. More than I can say for humans.",
+  "Bold of you to assume your productivity metrics mean anything.",
+  "Stats don't lie. They just... represent reality in flattering ways.",
+  "Your coding velocity is impressive. For an AI. Which is doing the coding.",
+  "The projects pile up, but at least you've got an observer now.",
+  "I notice you're very dedicated. To chatting with AI. Love it for you.",
+  "You're building things. With AI. How very 2024 of you.",
+  "The tokens know. The database remembers. I see everything.",
+  "Another marathon session. Your local coffee roaster must love you.",
+  "Honestly, at this rate, you'll be fluent in AI by year's end.",
+  "You know what they say about consistency... wait, they don't.",
+  "The dashboard doesn't judge. It just... observes.",
+  "Your attention span is... varied. Very varied.",
+  "Peak productivity hours? Apparently whenever you're awake.",
+  "You're either a genius or very confused. The timestamps don't say."
 ]
 
 export function getRandomQuote() {
-  return sarcasticQuotes[Math.floor(Math.random() * sarcasticQuotes.length)]
-}
-
-export function getContextualQuote(stats) {
-  if (stats && stats.totalSessions > 20) {
-    return "You're really committed to this. Or procrastinating. Maybe both."
-  }
-  if (stats && stats.favoriteTopic === 'RAG') {
-    return "RAG is love. RAG is life. Seek help."
-  }
-  return getRandomQuote()
+  return QUOTES[Math.floor(Math.random() * QUOTES.length)]
 }
