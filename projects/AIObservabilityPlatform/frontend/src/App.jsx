@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { parserAPI, timelineAPI, insightsAPI } from './api'
 import { QUOTES } from './constants/quotes'
@@ -25,44 +25,28 @@ const MESSAGES = [
   'Almost ready...',
 ]
 
-function FloatingQuotes() {
-  const positions = useRef(
-    QUOTES.slice(0, 7).map((_, i) => ({
-      x: 5 + (i * 13) % 80,
-      y: 10 + (i * 17) % 75,
-      delay: i * 0.35,
-      duration: 5 + (i % 3) * 2,
-    }))
-  )
+function QuoteTicker() {
+  const [idx, setIdx] = useState(0)
+  useEffect(() => {
+    const iv = setInterval(() => setIdx(i => (i + 1) % QUOTES.length), 4000)
+    return () => clearInterval(iv)
+  }, [])
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
-      {QUOTES.slice(0, 7).map((quote, i) => {
-        const p = positions.current[i]
-        return (
-          <motion.div
-            key={i}
-            className="absolute max-w-xs px-4 py-2.5 rounded-2xl text-xs font-semibold italic text-slate-300"
-            style={{
-              left: `${p.x}%`,
-              top:  `${p.y}%`,
-              background: 'rgba(10,12,40,0.5)',
-              border: '1px solid rgba(129,140,248,0.18)',
-              backdropFilter: 'blur(12px)',
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: [0, 0.85, 0.85, 0], y: [20, 0, 0, -20] }}
-            transition={{
-              duration: p.duration,
-              delay: p.delay,
-              repeat: Infinity,
-              repeatDelay: 1.5,
-              ease: 'easeInOut',
-            }}
-          >
-            &ldquo;{quote}&rdquo;
-          </motion.div>
-        )
-      })}
+    <div className="shrink-0 h-9 flex items-center justify-center overflow-hidden"
+      style={{ background: 'rgba(5,6,22,0.7)', borderTop: '1px solid rgba(129,140,248,0.12)', backdropFilter: 'blur(20px)' }}>
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={idx}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.45 }}
+          className="text-xs font-semibold italic px-6 text-center"
+          style={{ color: 'rgba(165,150,255,0.75)' }}
+        >
+          &ldquo;{QUOTES[idx]}&rdquo;
+        </motion.p>
+      </AnimatePresence>
     </div>
   )
 }
@@ -99,8 +83,8 @@ export default function App() {
     return (
       <>
         <div className="app-bg" />
-        <div className="page-root items-center justify-center" style={{ position: 'relative' }}>
-          <FloatingQuotes />
+        <div className="page-root">
+          <div className="flex-1 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center relative z-10">
             <motion.div
               animate={{ scale: [1, 1.08, 1], boxShadow: ['0 0 24px rgba(99,102,241,0.35)', '0 0 52px rgba(139,92,246,0.55)', '0 0 24px rgba(99,102,241,0.35)'] }}
@@ -122,6 +106,8 @@ export default function App() {
               ))}
             </div>
           </motion.div>
+          </div>
+          <QuoteTicker />
         </div>
       </>
     )
@@ -145,6 +131,7 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
         </main>
+        <QuoteTicker />
       </div>
     </>
   )
