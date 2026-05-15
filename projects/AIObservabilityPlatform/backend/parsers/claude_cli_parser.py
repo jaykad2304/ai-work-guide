@@ -7,7 +7,9 @@ from backend.parsers.utils import (
     extract_tokens_from_message,
     extract_title_from_messages,
     extract_keywords,
-    parse_iso_datetime
+    parse_iso_datetime,
+    extract_conversation_text,
+    build_claude_summary,
 )
 from backend.config import config
 
@@ -50,7 +52,17 @@ class ClaudeCliParser:
                             parsed_events.append(event)
                             print(f"✓ Parsed: {event.title} ({event.timestamp.date()})")
                         else:
-                            print(f"⊘ Already indexed: {event.title}")
+                            changed = False
+                            for field in ['timestamp', 'project', 'title', 'summary', 'topics', 'tokens_used', 'duration_minutes', 'raw_content', 'processed_at', 'indexed']:
+                                value = getattr(event, field)
+                                if getattr(existing, field) != value:
+                                    setattr(existing, field, value)
+                                    changed = True
+                            if changed:
+                                parsed_events.append(existing)
+                                print(f"↻ Refreshed: {event.title}")
+                            else:
+                                print(f"⊘ Already indexed: {event.title}")
                 except Exception as e:
                     print(f"✗ Error parsing {session_file.name}: {str(e)}")
 
@@ -95,6 +107,8 @@ class ClaudeCliParser:
             project_name = parts[-1] if parts else 'unknown'
 
         timestamp = parse_iso_datetime(created_at or datetime.utcnow().isoformat())
+        if not config.should_track_timestamp(timestamp):
+            return None
         title = extract_title_from_messages(messages)
 
         total_tokens = 0
@@ -103,36 +117,15 @@ class ClaudeCliParser:
                 usage = msg.get('usage', {})
                 total_tokens += usage.get('input_tokens', 0) + usage.get('output_tokens', 0)
 
-        # Extract text content from all messages
-        all_text = ''
-        for msg in messages:
-            if isinstance(msg, dict):
-                content = msg.get('content', [])
-                if isinstance(content, list):
-                    for item in content:
-                        if isinstance(item, dict) and 'text' in item:
-                            all_text += ' ' + item['text']
-                elif isinstance(content, str):
-                    all_text += ' ' + content
+        conversation = extract_conversation_text(messages)
+        all_text = conversation['combined']
 
         keywords = extract_keywords(all_text, top_n=5)
         topics = ','.join(keywords) if keywords else 'general'
 
         duration_minutes = max(1, total_tokens // 100) if total_tokens > 0 else 1
 
-        summary = 'Session completed'
-        for msg in reversed(messages):
-            if isinstance(msg, dict) and msg.get('role') == 'assistant':
-                content = msg.get('content', [])
-                if isinstance(content, list):
-                    for item in content:
-                        if isinstance(item, dict) and 'text' in item:
-                            summary = item['text'][:200].replace('\n', ' ').strip()
-                            break
-                elif isinstance(content, str):
-                    summary = content[:200].replace('\n', ' ').strip()
-                if summary != 'Session completed':
-                    break
+        summary = build_claude_summary(messages)
 
         event = Event(
             timestamp=timestamp,
@@ -144,7 +137,11 @@ class ClaudeCliParser:
             topics=topics,
             tokens_used=total_tokens,
             duration_minutes=duration_minutes,
-            raw_content=json.dumps({'messages': messages}),
+            raw_content=json.dumps({
+                'messages': messages,
+                'user_prompt': conversation['user_prompt'],
+                'assistant_summary': conversation['assistant_summary'],
+            }),
             processed_at=datetime.utcnow(),
             indexed=True
         )
