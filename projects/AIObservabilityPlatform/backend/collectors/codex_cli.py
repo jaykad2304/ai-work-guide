@@ -74,7 +74,8 @@ class CodexCliCollector(BaseCollector):
                     'file': str(file_path),
                     'cwd': meta.get('cwd', ''),
                     'excerpt': content,
-                    'assistant_summary': assistant_summary
+                    'assistant_summary': assistant_summary,
+                    'summary_status': 'ready'
                 }),
                 'indexed': True
             }

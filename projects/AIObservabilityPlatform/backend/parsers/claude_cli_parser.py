@@ -141,6 +141,7 @@ class ClaudeCliParser:
                 'messages': messages,
                 'user_prompt': conversation['user_prompt'],
                 'assistant_summary': conversation['assistant_summary'],
+                'summary_status': 'ready'
             }),
             processed_at=datetime.utcnow(),
             indexed=True
