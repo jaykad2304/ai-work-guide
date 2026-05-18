@@ -8,6 +8,10 @@ from backend.models import Event
 
 class ClaudeCliCollector(BaseCollector):
     tool_name = 'claude_cli'
+    display_name = 'Claude CLI'
+    status = 'supported'
+    description = 'Captures Claude CLI sessions from local JSONL project transcripts.'
+    setup_hint = 'Install/use Claude CLI normally; sessions are read from ~/.claude/projects.'
     watch_paths = [Path.home() / '.claude' / 'sessions']
 
     def parse_all(self, db: Session) -> List[Event]:

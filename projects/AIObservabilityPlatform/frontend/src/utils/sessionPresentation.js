@@ -14,6 +14,46 @@ function cleanText(text = '') {
     .trim()
 }
 
+function stripSystemNoise(text = '') {
+  let cleaned = cleanText(text)
+  const markers = [
+    'Collaboration Mode:',
+    'You are now in Default mode',
+    'Any previous instructions for other modes',
+    'Knowledge cutoff:',
+    'Current date:',
+    '<environment_context>',
+    '<permissions instructions>',
+    '<skills_instructions>',
+  ]
+
+  for (const marker of markers) {
+    const idx = cleaned.toLowerCase().indexOf(marker.toLowerCase())
+    if (idx >= 0) cleaned = cleaned.slice(0, idx).trim()
+  }
+
+  cleaned = cleaned
+    .replace(/^focus was:\s*#?\s*/i, '')
+    .replace(/^focus:\s*#?\s*/i, '')
+    .replace(/\s+#\s*$/i, '')
+    .trim()
+
+  return isLowValueText(cleaned) ? '' : cleaned
+}
+
+function isLowValueText(text = '') {
+  const lowered = cleanText(text).toLowerCase()
+  return !lowered || lowered === '#' || lowered === 'focus was' || lowered === 'focus was #' || lowered === 'session completed'
+}
+
+function cleanGeneratedTitle(title = '') {
+  let cleaned = stripSystemNoise(title)
+  if (/^worked on .+ using .+ around /i.test(cleaned)) {
+    cleaned = cleaned.replace(/\s+around\s+.+$/i, '')
+  }
+  return cleaned
+}
+
 function truncate(text, length = 500) {
   if (!text) return ''
   return text.length > length ? `${text.slice(0, length).trim()}...` : text
@@ -28,8 +68,8 @@ export function getSessionHeadline(event) {
     return 'Session in progress'
   }
 
-  const displaySummary = cleanText(event.display_summary)
-  const title = cleanText(event.title)
+  const displaySummary = stripSystemNoise(event.display_summary)
+  const title = cleanGeneratedTitle(event.title)
   if (displaySummary) {
     const firstSentence = displaySummary.split('. ')[0]
     return truncate(firstSentence, 84)
@@ -38,7 +78,7 @@ export function getSessionHeadline(event) {
     return title
   }
 
-  const summary = cleanText(event.summary)
+  const summary = stripSystemNoise(event.summary)
   if (summary && !/^codex cli session$/i.test(summary) && !/^session completed$/i.test(summary)) {
     return truncate(summary, 72)
   }
@@ -56,8 +96,8 @@ export function getSessionNarrative(event) {
     return SUMMARY_PENDING_TEXT
   }
 
-  const displaySummary = cleanText(event.display_summary)
-  const summary = cleanText(event.summary)
+  const displaySummary = stripSystemNoise(event.display_summary)
+  const summary = stripSystemNoise(event.summary)
   const topics = Array.isArray(event.topics) ? event.topics.filter(Boolean) : []
   const project = cleanText(event.project)
   const toolLabel = getToolLabel(event.tool)
@@ -97,6 +137,25 @@ export function getSessionDescriptor(event) {
   if (topics.length) parts.push(topics.slice(0, 2).join(' / '))
 
   return parts.length ? parts.join('  •  ') : 'Session overview'
+}
+
+export function getSessionCompactSummary(event) {
+  if (event.summary_status === 'active') {
+    return SUMMARY_PENDING_TEXT
+  }
+
+  const displaySummary = stripSystemNoise(event.display_summary)
+  const summary = stripSystemNoise(event.summary)
+
+  if (displaySummary) {
+    return truncate(displaySummary, 170)
+  }
+
+  if (summary && !/^codex cli session$/i.test(summary) && !/^session completed$/i.test(summary)) {
+    return truncate(summary, 170)
+  }
+
+  return truncate(getSessionNarrative(event), 170)
 }
 
 export function extractAchievements(event) {

@@ -20,3 +20,11 @@ build/
 *.swp
 *.swo
 *~
+
+# Local helper wrapper; README documents how users can create it.
+ai-history
+
+# Local design extraction/reference artifacts used during UI iteration.
+dashboard-design-system/
+dashboard-design-system-extracted/
+design-inspiration/

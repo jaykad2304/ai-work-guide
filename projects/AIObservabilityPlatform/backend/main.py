@@ -3,8 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from backend.database import init_db
 from backend.config import config
-from backend.routes import timeline, search, insights, export, events
-from backend.models import Event
+from backend.routes import timeline, search, insights, export, events, connectors
+from backend.models import Event, DailyMetadata, Insight
+from datetime import datetime, timezone
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,6 +34,7 @@ app.include_router(search.router)
 app.include_router(insights.router)
 app.include_router(export.router)
 app.include_router(events.router)
+app.include_router(connectors.router)
 
 @app.get("/health")
 def health_check():
@@ -61,6 +63,28 @@ async def rescan_all():
             "status": "success",
             "total_events": total,
             "by_tool": by_tool
+        }
+    finally:
+        db.close()
+
+@app.post("/reset-history")
+async def reset_history():
+    """Delete existing history and only track sessions from now onward."""
+    from backend.database import SessionLocal
+
+    cutoff = datetime.now(timezone.utc)
+    db = SessionLocal()
+    try:
+        db.query(Insight).delete()
+        db.query(DailyMetadata).delete()
+        deleted_events = db.query(Event).delete()
+        db.commit()
+        config.set_tracking_cutoff(cutoff)
+
+        return {
+            "status": "success",
+            "deleted_events": deleted_events,
+            "tracking_from": cutoff.isoformat()
         }
     finally:
         db.close()

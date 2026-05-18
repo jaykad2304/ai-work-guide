@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import json
+from backend.presentation import build_display_summary, build_token_hint, summary_status, tool_label
 
 Base = declarative_base()
 
@@ -29,10 +30,14 @@ class Event(Base):
             'id': self.id,
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
             'tool': self.tool,
+            'tool_label': tool_label(self.tool),
             'session_id': self.session_id,
             'project': self.project,
             'title': self.title,
             'summary': self.summary,
+            'summary_status': summary_status(self),
+            'display_summary': build_display_summary(self),
+            'token_hint': build_token_hint(self),
             'topics': self.topics.split(',') if self.topics else [],
             'tokens_used': self.tokens_used,
             'duration_minutes': self.duration_minutes

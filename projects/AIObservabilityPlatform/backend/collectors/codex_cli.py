@@ -11,6 +11,10 @@ from backend.config import config
 
 class CodexCliCollector(BaseCollector):
     tool_name = 'codex_cli'
+    display_name = 'Codex CLI'
+    status = 'supported'
+    description = 'Captures Codex CLI sessions from local JSONL session transcripts.'
+    setup_hint = 'Install/use Codex CLI normally; sessions are read from ~/.codex/sessions.'
     watch_paths = [Path.home() / '.codex' / 'sessions']
 
     def parse_all(self, db: Session) -> List[Event]:

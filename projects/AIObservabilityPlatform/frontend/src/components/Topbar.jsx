@@ -33,13 +33,13 @@ export default function Topbar({ activeView, onNavigate }) {
       >
         <div
           className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 0 14px rgba(99,102,241,0.5)' }}
+          style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.22)' }}
         >
           <Brain style={{ width: 15, height: 15, color: '#fff' }} />
         </div>
         <div className="flex items-baseline gap-2">
           <span className="text-sm font-black text-white tracking-tight">AI Observer</span>
-          <span className="text-[10px] text-slate-600 font-mono uppercase tracking-widest hidden sm:block">
+          <span className="text-[10px] text-blue-100/65 font-mono uppercase tracking-widest hidden sm:block">
             {dateStr}
           </span>
         </div>
@@ -66,11 +66,11 @@ export default function Topbar({ activeView, onNavigate }) {
               onClick={() => onNavigate(item.id)}
               className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all duration-200"
               style={active ? {
-                color: item.color,
-                background: `${item.color}18`,
-                border: `1px solid ${item.color}30`,
+                color: '#ffffff',
+                background: 'rgba(255,255,255,0.18)',
+                border: '1px solid rgba(255,255,255,0.32)',
               } : {
-                color: 'rgba(148,163,184,0.8)',
+                color: 'rgba(219,234,254,0.86)',
                 border: '1px solid transparent',
               }}
             >
@@ -80,7 +80,7 @@ export default function Topbar({ activeView, onNavigate }) {
                 <motion.div
                   layoutId="topbar-active"
                   className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full"
-                  style={{ background: item.color }}
+                  style={{ background: '#ffffff' }}
                   transition={{ type: 'spring', bounce: 0.3, duration: 0.4 }}
                 />
               )}
@@ -102,9 +102,9 @@ export default function Topbar({ activeView, onNavigate }) {
             transition={{ repeat: Infinity, duration: 2 }}
             className="w-1.5 h-1.5 rounded-full bg-emerald-400"
           />
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest hidden sm:block">Live</span>
+          <span className="text-[10px] font-bold text-blue-50/80 uppercase tracking-widest hidden sm:block">Live</span>
         </div>
-        <span className="font-mono text-xs text-slate-500 tabular-nums hidden sm:block">{timeStr}</span>
+        <span className="font-mono text-xs text-blue-50/80 tabular-nums hidden sm:block">{timeStr}</span>
       </motion.div>
     </header>
   )

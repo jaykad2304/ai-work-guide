@@ -9,10 +9,12 @@
 ## ✨ Features
 
 🚀 **Automatic Multi-Tool Tracking** — Claude CLI, Codex CLI, and extensible for any AI tool
-⚡ **Real-time Dashboard** — See new sessions as they happen
+⚡ **Real-time Dashboard** — Poster-style headers and clearer session cards
 📊 **Interactive Timeline** — Daily breakdown with stats and summaries
 🔍 **Smart Search** — Find conversations by tool, date, topic, or keywords
 💡 **Pattern Detection** — Discover your AI usage habits (peak hours, favorite topics)
+📝 **Session Digests** — Compact summaries explain what each session was about
+💸 **Token Saving Hints** — Every session card includes advice to reduce token usage
 🎨 **Vibrant UI** — Modern bright theme with smooth animations
 🔌 **Plugin Architecture** — Add new tools without touching core code
 🪝 **Webhook API** — Let VS Code extensions, browser tools send events
@@ -68,6 +70,70 @@ npm run dev
 
 Visit **http://localhost:3000**
 
+## CLI History
+
+You can optionally inspect project-scoped AI history from the terminal. This is just a small local helper around `scripts/ai_history.py`; it reads the same SQLite database used by the dashboard.
+
+```bash
+python scripts/ai_history.py
+python scripts/ai_history.py --days 7
+python scripts/ai_history.py --project AIObservabilityPlatform --limit 10
+```
+
+What it does:
+- Resolves the current folder to the closest tracked project name
+- Shows recent sessions as short digests instead of raw opening prompts
+- Prints tokens, duration, date, and topics for quick terminal review
+
+If you want the shorter `./ai-history` command, create a local wrapper:
+
+```bash
+cat > ai-history <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "${SCRIPT_DIR}/venv/bin/python" "${SCRIPT_DIR}/scripts/ai_history.py" "$@"
+EOF
+chmod +x ai-history
+```
+
+You can also symlink that wrapper into your `PATH` if you want to call it globally as `ai-history`.
+
+## Connector Coverage
+
+AI Observer is built around two integration paths:
+
+- **Collectors** parse local provider logs/transcripts into normalized events.
+- **External event ingestion** lets VS Code extensions, browser extensions, CLI wrappers, CI jobs, or hosted agents push events to `POST /api/events`.
+
+Built-in today:
+
+- Claude CLI
+- Codex CLI
+- External Event API
+
+Connector-ready/planned:
+
+- VS Code AI extension chats
+- GitHub Copilot CLI / IDE activity
+- Google Jules async coding tasks
+- Other AI-powered CLI agents
+
+To configure collectors:
+
+```bash
+cp collectors.yml.example collectors.yml
+```
+
+To inspect product coverage:
+
+```bash
+curl http://localhost:8000/connectors
+```
+
+See [docs/connectors.md](docs/connectors.md) for the collector contract and `/api/events` payload examples.
+
 ## How It Works
 
 ### 1. **Automatic Collection**
@@ -84,7 +150,7 @@ Each AI tool has a "collector" that knows how to parse its session format:
 ### 3. **Data Processing**
 - Extract: timestamps, tokens, conversation content, metadata
 - Parse: topics via keyword extraction
-- Summarize: AI-generated session summaries
+- Summarize: concise display digests for UI and CLI consumption
 - Aggregate: Daily stats, activity scores, peak hours
 
 ### 4. **Real-time Visualization**
@@ -92,6 +158,8 @@ Each AI tool has a "collector" that knows how to parse its session format:
 - Frontend queries API in real-time
 - Timeline updates automatically as sessions are detected
 - Search, filter, sort by any field
+- Dashboard, Projects, Timeline, and Search render sessions as compact narrative cards
+- Each session card includes a token-saving hint based on the session summary and size
 
 ### 5. **Export & Integration**
 - JSON export for data portability
@@ -123,7 +191,9 @@ Each AI tool has a "collector" that knows how to parse its session format:
 - `POST /api/events` — Push events from any tool (VS Code, browser, CLI)
   ```json
   {
-    "tool": "my_tool",
+    "tool": "github_copilot",
+    "session_id": "github_copilot-local-123",
+    "project": "AIObservabilityPlatform",
     "title": "Session title",
     "summary": "What happened",
     "topics": "keyword1,keyword2",
@@ -131,6 +201,9 @@ Each AI tool has a "collector" that knows how to parse its session format:
     "duration_minutes": 5
   }
   ```
+
+### Connectors
+- `GET /connectors` — Show supported, connector-ready, and planned integrations
 
 ### Management
 - `POST /rescan` — Manually trigger scan of all collectors
@@ -142,7 +215,7 @@ Each AI tool has a "collector" that knows how to parse its session format:
 - `timestamp` — When the conversation happened
 - `tool` — Which tool (claude_cli, claude_web, chatgpt, codex)
 - `title` — First message/topic
-- `summary` — Brief AI summary of conversation
+- `summary` — Brief AI summary of conversation or extracted assistant recap
 - `topics` — Extracted keywords (RAG, API, Payments, etc.)
 - `tokens_used` — Estimated token count
 - `duration_minutes` — Conversation length
@@ -155,6 +228,12 @@ Each AI tool has a "collector" that knows how to parse its session format:
 - `activity_score` — 0-100 productivity score
 - `peak_hour` — Most active hour (0-23)
 - `primary_topics` — Top topics for the day
+
+## UI Notes
+
+- Each main view starts with a large poster-style heading so the active page reads clearly.
+- Session cards use stronger borders and spacing to make adjacent sessions easy to distinguish.
+- Session summaries stay compact, but now explain the task more directly and include token-saving advice.
 
 ## Architecture
 

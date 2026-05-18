@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { parserAPI, timelineAPI, insightsAPI } from './api'
-import { QUOTES } from './constants/quotes'
 import Topbar from './components/Topbar'
 import Dashboard from './components/Dashboard'
 import ProjectsView from './components/ProjectsView'
@@ -27,38 +26,20 @@ const MESSAGES = [
   'Almost ready...',
 ]
 
-function QuoteTicker() {
-  const [idx, setIdx] = useState(0)
-  useEffect(() => {
-    const iv = setInterval(() => setIdx(i => (i + 1) % QUOTES.length), 4500)
-    return () => clearInterval(iv)
-  }, [])
-  return (
-    <div className="shrink-0 flex flex-col items-center justify-center overflow-hidden py-6 px-10"
-      style={{ background: 'rgba(30,20,70,0.92)', borderTop: '2px solid rgba(139,92,246,0.5)' }}>
-      <span className="text-base font-black uppercase tracking-widest mb-3" style={{ color: '#a78bfa' }}>✦ AI says</span>
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={idx}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
-          transition={{ duration: 0.4 }}
-          className="text-4xl font-bold italic text-white text-center leading-snug"
-        >
-          &ldquo;{QUOTES[idx]}&rdquo;
-        </motion.p>
-      </AnimatePresence>
-    </div>
-  )
-}
-
 export default function App() {
   const [view, setView]         = useState('dashboard')
   const [days, setDays]         = useState(30)
   const [timeline, setTimeline] = useState(null)
   const [loading, setLoading]   = useState(true)
   const [msgIdx, setMsgIdx]     = useState(0)
+  const [theme, setTheme]       = useState(() => {
+    if (typeof window === 'undefined') return 'light'
+    return window.localStorage.getItem('ai-observer-dashboard-theme') || 'light'
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem('ai-observer-dashboard-theme', theme)
+  }, [theme])
 
   useEffect(() => {
     const iv = setInterval(() => setMsgIdx(i => (i + 1) % MESSAGES.length), 1100)
@@ -109,7 +90,6 @@ export default function App() {
             </div>
           </motion.div>
           </div>
-          <QuoteTicker />
         </div>
       </>
     )
@@ -129,11 +109,10 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <ActiveView timeline={timeline} days={days} onDaysChange={setDays} />
+              <ActiveView timeline={timeline} days={days} onDaysChange={setDays} theme={theme} onThemeChange={setTheme} />
             </motion.div>
           </AnimatePresence>
         </main>
-        <QuoteTicker />
       </div>
     </>
   )

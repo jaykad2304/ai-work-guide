@@ -1,0 +1,22 @@
+collectors:
+  # Built-in local transcript collectors.
+  - name: claude_cli
+    enabled: true
+
+  - name: codex_cli
+    enabled: true
+
+  # Connector-ready source. Integrations can POST normalized events to /api/events.
+  - name: external_events
+    enabled: true
+
+  # Planned connector slots. Enable after implementing the provider-specific collector,
+  # CLI wrapper, VS Code extension bridge, or API integration.
+  - name: vscode_extension
+    enabled: false
+
+  - name: github_copilot
+    enabled: false
+
+  - name: google_jules
+    enabled: false

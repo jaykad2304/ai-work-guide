@@ -38,4 +38,8 @@ export const parserAPI = {
   rescan: () => api.post('/rescan')
 }
 
+export const connectorsAPI = {
+  list: () => api.get('/connectors')
+}
+
 export default api
