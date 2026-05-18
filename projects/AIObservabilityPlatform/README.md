@@ -70,6 +70,26 @@ npm run dev
 
 Visit **http://localhost:3000**
 
+## Start & Stop Scripts
+
+For local demos, you can use the included helper scripts:
+
+```bash
+./start.sh
+```
+
+`start.sh` runs `docker-compose up --build -d` for the backend stack, then starts the Vite frontend with `npm run dev`.
+
+To stop everything:
+
+```bash
+./stop.sh
+```
+
+`stop.sh` runs `docker-compose down` and stops the local Vite dev server.
+
+Use Docker directly if you want the fully containerized path. Use `./start.sh` / `./stop.sh` when you want a quick local development/demo workflow.
+
 ## CLI History
 
 You can optionally inspect project-scoped AI history from the terminal. This is just a small local helper around `scripts/ai_history.py`; it reads the same SQLite database used by the dashboard.
