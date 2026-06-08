@@ -1,0 +1,22 @@
+name: HomeWalkieTalkie
+options:
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.local.HomeWalkieTalkie
+    DEVELOPMENT_TEAM: ""
+targets:
+  HomeWalkieTalkie:
+    type: application
+    platform: iOS
+    sources:
+      - HomeWalkieTalkie
+    info:
+      path: HomeWalkieTalkie/Info.plist
+      properties:
+        CFBundleDisplayName: Home Walkie
+        NSMicrophoneUsageDescription: This app needs microphone access to send your voice to nearby devices on your home Wi-Fi.
+        NSLocalNetworkUsageDescription: This app uses your local network to find and talk to nearby devices without an internet server.
+        NSBonjourServices:
+          - _home-walkie._tcp

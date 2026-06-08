@@ -1,0 +1,50 @@
+[
+  {
+    "prompt_inputs": {
+      "height": "180",
+      "weight": "85",
+      "goal": "muscle gain for strength training",
+      "restrictions": "none"
+    },
+    "solution_criteria": [
+      "Meal plan is compact and fits on a single day overview",
+      "Protein is distributed across at least 4 meals with minimum 30g per meal",
+      "Includes post-workout recovery nutrition timing",
+      "Macronutrient ratios support muscle building (approximately 40% protein, 40% carbs, 20% fat)"
+    ],
+    "task_description": "Write a compact, consise meal plan for a single athlete",
+    "scenario": "Testing with a strength/power athlete (weightlifter) with specific macronutrient ratios for muscle building, focusing on protein distribution and recovery nutrition"
+  },
+  {
+    "prompt_inputs": {
+      "height": "178 cm",
+      "weight": "68 kg",
+      "goal": "Marathon training with carbohydrate loading and high calorie intake for endurance",
+      "restrictions": "None"
+    },
+    "solution_criteria": [
+      "Meal plan is compact and concise (fits on one page or ~400 words)",
+      "Includes high-carbohydrate meals with timing around training sessions",
+      "Daily calorie intake supports endurance athlete needs (approximately 3000+ calories)",
+      "Emphasizes energy-dense foods suitable for marathon preparation"
+    ],
+    "task_description": "Write a compact, consise meal plan for a single athlete",
+    "scenario": "Testing with a high-endurance athlete (marathon runner) requiring high calorie intake and carbohydrate loading, emphasizing energy density and timing around training sessions"
+  },
+  {
+    "prompt_inputs": {
+      "height": "160 cm",
+      "weight": "48 kg",
+      "goal": "maintain low body weight while maximizing strength and nutrient density for artistic gymnastics competition",
+      "restrictions": "vegan, no nuts or tree nuts due to allergy"
+    },
+    "solution_criteria": [
+      "Meal plan is compact and concise (single day or 3-day format)",
+      "All meals are vegan with alternative protein sources (legumes, tofu, seeds, grains)",
+      "No nuts or tree nuts included in any meal",
+      "Meals are nutrient-dense with adequate protein, iron, and calcium for athletic performance while supporting low body weight maintenance"
+    ],
+    "task_description": "Write a compact, consise meal plan for a single athlete",
+    "scenario": "Testing with a sport-specific dietary constraint scenario (e.g., a gymnast requiring low body weight with high nutrient density, or a vegan athlete needing alternative protein sources)"
+  }
+]
