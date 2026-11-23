@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EV Charging Platform - Prototype</title>
+<style>
+  :root{--bg:#f3f6fb;--card:#fff;--ink:#1d2433;--mute:#6b7487;--line:#e3e8f1;--blue:#0a6cff;--green:#14a86b;--amber:#f0a500;--red:#e5484d;--dark:#0e1624}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  .banner{background:var(--dark);color:#fff;padding:12px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+  .banner b{font-size:15px}
+  .banner small{color:#9fb0cc}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{background:transparent;color:#cfd9ec;border:1px solid #33425c;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600}
+  .tab.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .stage{padding:24px;display:flex;justify-content:center}
+  .phone{width:390px;height:800px;background:#111;border-radius:44px;padding:12px;box-shadow:0 20px 50px rgba(10,20,40,.25)}
+  .screen{width:100%;height:100%;background:#fff;border-radius:34px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+  .sbody{flex:1;overflow-y:auto;padding:16px 18px 20px}
+  .sbar{padding:14px 18px 6px;display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+  .hdr{font-size:20px;font-weight:700;margin:4px 0 10px;display:flex;align-items:center;gap:8px}
+  .back{background:#eef2f8;border:0;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px}
+  .btn{display:block;width:100%;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:13px;font-weight:700;font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.ghost{background:#eef2f8;color:var(--ink)}
+  .btn.red{background:var(--red)}
+  .btn.sm{display:inline-block;width:auto;padding:7px 12px;font-size:12px;margin:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .mute{color:var(--mute);font-size:12px}
+  .pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+  .ok{background:#dcf5ea;color:#0b7a4d}.warn{background:#fff1cc;color:#8a5f00}.bad{background:#fde0e1;color:#a4272b}.info{background:#dde9ff;color:#0a4fbf}.gray{background:#eceff5;color:#4b5567}
+  input,select,textarea{width:100%;padding:11px;border:1px solid #d6dde9;border-radius:10px;font-size:14px;margin-top:4px;background:#fff;font-family:inherit}
+  label{display:block;margin-top:10px;font-weight:600;font-size:12px;color:var(--mute)}
+  .map{position:relative;height:280px;border-radius:16px;background:#e9efe9;overflow:hidden;border:1px solid var(--line)}
+  .pin{position:absolute;transform:translate(-50%,-100%);background:var(--blue);color:#fff;border:0;border-radius:14px 14px 14px 2px;padding:4px 7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .pin.off{background:#8a93a6}.pin.busy{background:var(--amber);color:#2b1d00}
+  .nav{display:flex;justify-content:space-around;border-top:1px solid var(--line);padding:8px 0 14px;background:#fff}
+  .nav button{background:none;border:0;font-size:11px;color:var(--mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit}
+  .nav button.on{color:var(--blue);font-weight:700}
+  .ring{position:relative;width:200px;height:200px;margin:12px auto}
+  .ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .big{font-size:30px;font-weight:800;color:var(--blue)}
+  .chip{display:inline-block;border:1px solid #cfd8e6;border-radius:999px;padding:6px 12px;margin:3px;cursor:pointer;font-weight:600;font-size:12px;background:#fff}
+  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .tog{width:42px;height:24px;background:#c9d1df;border-radius:999px;position:relative;cursor:pointer;flex:none}
+  .tog::after{content:"";position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.2s}
+  .tog.on{background:var(--green)}.tog.on::after{left:20px}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:120px;padding-top:8px}
+  .bars div{flex:1;background:var(--blue);border-radius:6px 6px 0 0;position:relative;min-height:4px}
+  .bars span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--mute)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+  .kpi b{font-size:22px;display:block;margin-top:4px}
+  .admin{display:flex;width:1200px;max-width:100%;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;min-height:760px}
+  .side{width:220px;background:#0f1a2e;color:#c9d4e8;padding:16px 10px;flex:none}
+  .side h4{font-size:11px;letter-spacing:.08em;color:#6f819f;margin:14px 10px 6px;text-transform:uppercase}
+  .side button{display:block;width:100%;text-align:left;background:none;border:0;color:#c9d4e8;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+  .side button.on,.side button:hover{background:#1d2c46;color:#fff}
+  .main{flex:1;padding:22px 26px;min-width:0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--mute);font-weight:600;font-size:12px;background:#f8fafd}
+  .notice{background:#fff8e1;border:1px solid #ffe08a;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .toast{position:absolute;left:16px;right:16px;bottom:80px;background:#1d2433;color:#fff;border-radius:12px;padding:10px 12px;font-size:13px;display:none;z-index:5}
+  .langbar{display:flex;gap:6px;justify-content:center;margin:6px 0 4px}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div><b>EV Charging Platform - Clickable Prototype</b><br><small>Mock data only. Not production software. Branding is a placeholder. Customer app in English, Hindi and Marathi.</small></div>
+  <select id="clientSel" onchange="S.client=this.value;if(S.cs!=='login'&&S.cs!=='otp'&&S.cs!=='consent')S.cs='home';render()" style="border-radius:8px;padding:7px 10px;font-weight:600;font-family:inherit"></select>
+  <div class="tabs">
+    <button class="tab" id="t-customer" onclick="setTab('customer')">Customer app</button>
+    <button class="tab" id="t-adhoc" onclick="setTab('adhoc')">Ad-hoc web charging</button>
+    <button class="tab" id="t-admin" onclick="setTab('admin')">Admin portal (English)</button>
+  </div>
+</div>
+
+<div id="app" class="stage"></div>
+
+<script>
+// ---------- translations (customer app and ad-hoc page) ----------
+const I18N = {
+en:{
+  explore:'Explore', wallet:'Wallet', alerts:'Alerts', profile:'Profile',
+  language:'Language', login:'Log in', loginSub:"We'll send you a one-time code to keep your account secure.",
+  countryCode:'Country code', mobile:'Mobile number', sendCode:'Send code', enterCode:'Enter code', sentTo:'Sent to',
+  verify:'Verify', resend:'Resend in 0:28', privacyTitle:'Your privacy', acceptTerms:'Accept Terms of Service',
+  consentBilling:'Use my charging data for billing and reports', marketingOffers:'Marketing offers',
+  consentNote:'You can change these any time in Profile. Your data is stored in India.', continue:'Continue',
+  findCharger:'Find a charger', searchPh:'Location, charging station', nearby:'Nearby chargers', filter:'Filter',
+  qrTitle:'Have a QR code?', qrSub:'Scan a charger to start without an account (ad-hoc charging).', tryAdhoc:'Try ad-hoc charging',
+  available:'Available', charging:'Charging', busy:'Busy', offline:'Offline', faulted:'Faulted', up:'Up to date',
+  perKwh:'/ kWh', rating:'Rating', open24:'Open 24 hours', price:'Price', status:'Status', connectors:'Connectors',
+  navigate:'Navigate', save:'Save', share:'Share', chargeHere:'Charge here', reserveSlot:'Reserve a slot',
+  reportFault:'Report a faulty charger', confirmCharging:'Confirm charging', station:'Station', connector:'Connector',
+  howMuch:'How much energy?', energy:'Energy', taxLabel:'GST', estTotal:'Estimated total',
+  holdNote:'Wallet will hold {x} until charging ends, then charge the final amount.', payFrom:'Pay from',
+  confirmStart:'Confirm & start', liveNow:'Live', chargingAt:'You are charging at', elapsed:'Elapsed',
+  estCost:'Estimated cost', target:'Target', stopCharging:'Stop charging', somethingWrong:'Something wrong? Report a fault',
+  chargingComplete:'Charging complete', paidWallet:'Paid from wallet', duration:'Duration', energyCharge:'Energy charge',
+  download:'Download receipt', done:'Done', availableSpend:'Available balance', addMoney:'Add money',
+  transactions:'Transactions', chargingHistory:'Charging history', paymentMethods:'Payment methods',
+  last30:'Last 30 days', avg20:'Average 20 kWh per session', reserveTitle:'Reserve a slot', today:'Today', tomorrow:'Tomorrow',
+  startTime:'Start time', durationLbl:'Duration', reserveFee:'Reservation fee', refundable:'refundable up to 30 min before',
+  confirmReservation:'Confirm reservation', reportTitle:'Report a fault', whatWrong:'What is wrong?',
+  describe:'Describe the problem', photo:'Photo (optional)', addPhoto:'Add photo', submitReport:'Submit report',
+  ticketThanks:'Thanks. Our team will contact you within 2 hours.', assigned:'Assigned', assignedTech:'Assigned to technician',
+  nextUpdate:'Next update', within2:'Within 2 hours', backMap:'Back to map', alertsTitle:'Alerts',
+  profileTitle:'Profile', yourVehicles:'Your vehicles', rfidCards:'RFID cards', pushN:'Push notifications',
+  emailR:'Email receipts', smsA:'SMS alerts', privacyData:'Privacy and data', helpSupport:'Help and support', logout:'Log out',
+  addCard:'Add RFID card', addVehicle:'Add vehicle', vehiclesTitle:'Your vehicles', scanTitle:'Scan the QR code on the charger',
+  scanSub:'No app needed. Works on any phone browser.', simulateScan:'Simulate scan', payStart:'Pay and start',
+  receiptEmail:'Email for receipt', payCardNote:'Card or UPI processed by the payment gateway. We do not store card details.',
+  pay:'Pay', topupOK:'Added', failed:'Failed', deducted:'Deducted', seeAll:'View all', filterStub:'Filter (prototype)',
+  active:'Active', thankQr:'Scan done', upi:'UPI', card:'Card', netbanking:'Net banking'
+},
+hi:{
+  explore:'खोजें', wallet:'वॉलेट', alerts:'सूचनाएँ', profile:'प्रोफ़ाइल',
+  language:'भाषा', login:'लॉग इन करें', loginSub:'आपका खाता सुरक्षित रखने के लिए हम आपको एक बार का कोड भेजेंगे।',
+  countryCode:'देश कोड', mobile:'मोबाइल नंबर', sendCode:'कोड भेजें', enterCode:'कोड दर्ज करें', sentTo:'भेजा गया',
+  verify:'सत्यापित करें', resend:'0:28 में दोबारा भेजें', privacyTitle:'आपकी गोपनीयता', acceptTerms:'सेवा की शर्तें स्वीकार करें',
+  consentBilling:'बिलिंग और रिपोर्ट के लिए मेरा चार्जिंग डेटा उपयोग करें', marketingOffers:'प्रचार ऑफ़र',
+  consentNote:'आप ये विकल्प प्रोफ़ाइल में कभी भी बदल सकते हैं। आपका डेटा भारत में संग्रहीत होता है।', continue:'जारी रखें',
+  findCharger:'चार्जर खोजें', searchPh:'स्थान, चार्जिंग स्टेशन', nearby:'आस-पास के चार्जर', filter:'फ़िल्टर',
+  qrTitle:'QR कोड है?', qrSub:'बिना खाते के शुरू करने के लिए चार्जर स्कैन करें (एड-हॉक चार्जिंग)।', tryAdhoc:'एड-हॉक चार्जिंग आज़माएँ',
+  available:'उपलब्ध', charging:'चार्ज हो रहा है', busy:'व्यस्त', offline:'ऑफ़लाइन', faulted:'खराब', up:'अपडेटेड',
+  perKwh:'/ kWh', rating:'रेटिंग', open24:'24 घंटे खुला', price:'दर', status:'स्थिति', connectors:'कनेक्टर',
+  navigate:'रास्ता देखें', save:'सेव करें', share:'शेयर करें', chargeHere:'यहाँ चार्ज करें', reserveSlot:'स्लॉट आरक्षित करें',
+  reportFault:'खराब चार्जर की शिकायत करें', confirmCharging:'चार्जिंग की पुष्टि करें', station:'स्टेशन', connector:'कनेक्टर',
+  howMuch:'कितनी ऊर्जा चाहिए?', energy:'ऊर्जा', taxLabel:'जीएसटी', estTotal:'अनुमानित कुल राशि',
+  holdNote:'चार्जिंग खत्म होने तक वॉलेट में {x} रोके जाएँगे, फिर अंतिम राशि काटी जाएगी।', payFrom:'भुगतान स्रोत',
+  confirmStart:'पुष्टि करें और शुरू करें', liveNow:'लाइव', chargingAt:'आप चार्ज कर रहे हैं', elapsed:'बीता समय',
+  estCost:'अनुमानित लागत', target:'लक्ष्य', stopCharging:'चार्जिंग बंद करें', somethingWrong:'कुछ गड़बड़ है? खराबी की शिकायत करें',
+  chargingComplete:'चार्जिंग पूरी हुई', paidWallet:'वॉलेट से भुगतान हुआ', duration:'अवधि', energyCharge:'ऊर्जा शुल्क',
+  download:'रसीद डाउनलोड करें', done:'हो गया', availableSpend:'उपलब्ध शेष', addMoney:'पैसे जोड़ें',
+  transactions:'लेन-देन', chargingHistory:'चार्जिंग इतिहास', paymentMethods:'भुगतान के तरीके',
+  last30:'पिछले 30 दिन', avg20:'प्रति सत्र औसतन 20 kWh', reserveTitle:'स्लॉट आरक्षित करें', today:'आज', tomorrow:'कल',
+  startTime:'शुरुआत का समय', durationLbl:'अवधि', reserveFee:'आरक्षण शुल्क', refundable:'30 मिनट पहले तक वापसी योग्य',
+  confirmReservation:'आरक्षण की पुष्टि करें', reportTitle:'खराबी की शिकायत', whatWrong:'समस्या क्या है?',
+  describe:'समस्या का विवरण लिखें', photo:'फ़ोटो (वैकल्पिक)', addPhoto:'फ़ोटो जोड़ें', submitReport:'शिकायत भेजें',
+  ticketThanks:'धन्यवाद। हमारी टीम 2 घंटे में आपसे संपर्क करेगी।', assigned:'सौंपा गया', assignedTech:'तकनीशियन को सौंपा गया',
+  nextUpdate:'अगला अपडेट', within2:'2 घंटे के भीतर', backMap:'मानचित्र पर वापस जाएँ', alertsTitle:'सूचनाएँ',
+  profileTitle:'प्रोफ़ाइल', yourVehicles:'आपके वाहन', rfidCards:'आरएफआईडी कार्ड', pushN:'पुश सूचनाएँ',
+  emailR:'ईमेल पर रसीदें', smsA:'एसएमएस अलर्ट', privacyData:'गोपनीयता और डेटा', helpSupport:'सहायता', logout:'लॉग आउट',
+  addCard:'आरएफआईडी कार्ड जोड़ें', addVehicle:'वाहन जोड़ें', vehiclesTitle:'आपके वाहन', scanTitle:'चार्जर पर लगा QR कोड स्कैन करें',
+  scanSub:'ऐप की ज़रूरत नहीं। किसी भी फ़ोन ब्राउज़र पर चलता है।', simulateScan:'स्कैन करें (डेमो)', payStart:'भुगतान करें और शुरू करें',
+  receiptEmail:'रसीद के लिए ईमेल', payCardNote:'कार्ड या UPI से भुगतान पेमेंट गेटवे से होता है। हम कार्ड की जानकारी संग्रहीत नहीं करते।',
+  pay:'भुगतान करें', topupOK:'जोड़ा गया', failed:'विफल', deducted:'कटा', seeAll:'सभी देखें', filterStub:'फ़िल्टर (डेमो)',
+  active:'सक्रिय', thankQr:'स्कैन पूरा', upi:'UPI', card:'कार्ड', netbanking:'नेट बैंकिंग'
+},
+mr:{
+  explore:'शोधा', wallet:'वॉलेट', alerts:'सूचना', profile:'प्रोफाइल',
+  language:'भाषा', login:'लॉग इन करा', loginSub:'तुमचे खाते सुरक्षित ठेवण्यासाठी आम्ही तुम्हाला एक वेळचा कोड पाठवू.',
+  countryCode:'देश कोड', mobile:'मोबाइल नंबर', sendCode:'कोड पाठवा', enterCode:'कोड टाका', sentTo:'पाठवला',
+  verify:'पडताळा', resend:'0:28 नंतर पुन्हा पाठवा', privacyTitle:'तुमची गोपनीयता', acceptTerms:'सेवा अटी स्वीकारा',
+  consentBilling:'बिलिंग आणि अहवालासाठी माझा चार्जिंग डेटा वापरा', marketingOffers:'जाहिरात ऑफर',
+  consentNote:'हे पर्याय तुम्ही प्रोफाइलमध्ये कधीही बदलू शकता. तुमचा डेटा भारतात साठवला जातो.', continue:'पुढे जा',
+  findCharger:'चार्जर शोधा', searchPh:'ठिकाण, चार्जिंग स्टेशन', nearby:'जवळचे चार्जर', filter:'फिल्टर',
+  qrTitle:'QR कोड आहे?', qrSub:'खात्याशिवाय सुरू करण्यासाठी चार्जर स्कॅन करा (अ‍ॅड-हॉक चार्जिंग).', tryAdhoc:'अ‍ॅड-हॉक चार्जिंग वापरून पहा',
+  available:'उपलब्ध', charging:'चार्जिंग सुरू', busy:'व्यस्त', offline:'बंद', faulted:'बिघाड', up:'अद्ययावत',
+  perKwh:'/ kWh', rating:'रेटिंग', open24:'२४ तास उघडे', price:'दर', status:'स्थिती', connectors:'कनेक्टर',
+  navigate:'मार्ग पहा', save:'जतन करा', share:'शेअर करा', chargeHere:'इथे चार्ज करा', reserveSlot:'स्लॉट राखीव करा',
+  reportFault:'खराब चार्जरची तक्रार करा', confirmCharging:'चार्जिंगची खात्री करा', station:'स्टेशन', connector:'कनेक्टर',
+  howMuch:'किती ऊर्जा हवी?', energy:'ऊर्जा', taxLabel:'जीएसटी', estTotal:'अंदाजे एकूण रक्कम',
+  holdNote:'चार्जिंग संपेपर्यंत वॉलेटमधील {x} राखून ठेवले जातील, नंतर अंतिम रक्कम कापली जाईल.', payFrom:'पैसे कुठून भरायचे',
+  confirmStart:'खात्री करा आणि सुरू करा', liveNow:'लाइव्ह', chargingAt:'तुम्ही चार्ज करत आहात', elapsed:'झालेला वेळ',
+  estCost:'अंदाजे खर्च', target:'लक्ष्य', stopCharging:'चार्जिंग थांबवा', somethingWrong:'काही अडचण आहे? बिघाडाची तक्रार करा',
+  chargingComplete:'चार्जिंग पूर्ण', paidWallet:'वॉलेटमधून भरले', duration:'कालावधी', energyCharge:'ऊर्जा शुल्क',
+  download:'पावती डाउनलोड करा', done:'झाले', availableSpend:'उपलब्ध शिल्लक', addMoney:'पैसे जमा करा',
+  transactions:'व्यवहार', chargingHistory:'चार्जिंग इतिहास', paymentMethods:'पेमेंट पद्धती',
+  last30:'गेले ३० दिवस', avg20:'प्रत्येक सत्रात सरासरी २० kWh', reserveTitle:'स्लॉट राखीव करा', today:'आज', tomorrow:'उद्या',
+  startTime:'सुरुवातीची वेळ', durationLbl:'कालावधी', reserveFee:'आरक्षण शुल्क', refundable:'३० मिनिटांपूर्वीपर्यंत परत मिळेल',
+  confirmReservation:'आरक्षणाची खात्री करा', reportTitle:'बिघाडाची तक्रार', whatWrong:'काय अडचण आहे?',
+  describe:'अडचणीचे वर्णन करा', photo:'फोटो (ऐच्छिक)', addPhoto:'फोटो जोडा', submitReport:'तक्रार पाठवा',
+  ticketThanks:'धन्यवाद. आमची टीम २ तासांत तुमच्याशी संपर्क करेल.', assigned:'नियुक्त', assignedTech:'तंत्रज्ञांकडे नियुक्त',
+  nextUpdate:'पुढील अपडेट', within2:'२ तासांत', backMap:'नकाशावर परत जा', alertsTitle:'सूचना',
+  profileTitle:'प्रोफाइल', yourVehicles:'तुमची वाहने', rfidCards:'आरएफआयडी कार्ड', pushN:'पुश सूचना',
+  emailR:'ई-मेलवर पावत्या', smsA:'एसएमएस अलर्ट', privacyData:'गोपनीयता आणि डेटा', helpSupport:'मदत आणि सहाय्य', logout:'लॉग आउट',
+  addCard:'आरएफआयडी कार्ड जोडा', addVehicle:'वाहन जोडा', vehiclesTitle:'तुमची वाहने', scanTitle:'चार्जरवरील QR कोड स्कॅन करा',
+  scanSub:'अ‍ॅपची गरज नाही. कोणत्याही फोनच्या ब्राउझरवर चालते.', simulateScan:'स्कॅन करा (डेमो)', payStart:'पैसे भरा आणि सुरू करा',
+  receiptEmail:'पावतीसाठी ई-मेल', payCardNote:'कार्ड किंवा UPI पेमेंट गेटवेद्वारे होते. आम्ही कार्डाचा तपशील साठवत नाही.',
+  pay:'पैसे भरा', topupOK:'जमा झाले', failed:'अयशस्वी', deducted:'कापले', seeAll:'सर्व पहा', filterStub:'फिल्टर (डेमो)',
+  active:'सक्रिय', thankQr:'स्कॅन पूर्ण', upi:'UPI', card:'कार्ड', netbanking:'नेट बँकिंग'
+}
+};
+const LANG_NAMES = {en:'English', hi:'हिन्दी', mr:'मराठी'};
+// Per-client configuration (placeholder names). In the real build, each client has one file like this.
+const CLIENTS = {
+  a:{name:'Client A EV', mark:'A', color:'#0a6cff', accent:'#14a86b', langs:['en','hi','mr'], features:{wallet:true,reservations:true,faults:true}, gateway:'Razorpay (UPI, cards, net banking)'},
+  b:{name:'Client B Charge', mark:'B', color:'#7c3aed', accent:'#f59e0b', langs:['en','hi'], features:{wallet:false,reservations:true,faults:true}, gateway:'Razorpay (UPI, cards)'},
+  c:{name:'Client C Plug', mark:'C', color:'#0f766e', accent:'#84cc16', langs:['en','mr'], features:{wallet:true,reservations:false,faults:true}, gateway:'Razorpay (UPI, cards, net banking)'}
+};
+function brand(){ return CLIENTS[S.client] || CLIENTS.a; }
+function brandHead(){ return `<div style="display:flex;align-items:center;gap:8px;margin-top:6px"><span style="width:36px;height:36px;border-radius:10px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${brand().mark}</span><b>${brand().name}</b></div>`; }
+function t(k){ return (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k; }
+// Rupee formatting (Indian digit grouping)
+function inr(x){ return '₹' + Number(x).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// ---------- mock data (INR) ----------
+const STATIONS = [
+  {id:'ST-001',name:'Phoenix Mall Charger',addr:'Viman Nagar, Pune',dist:'0.8 km',rate:18,rating:4.6,status:'available',x:24,y:30,
+   conn:[{id:'C1',t:'CCS2',kw:60,st:'free'},{id:'C2',t:'Type 2',kw:22,st:'charging'}]},
+  {id:'ST-002',name:'Tech Park Workspace',addr:'Hinjewadi Phase 1, Pune',dist:'1.6 km',rate:16,rating:4.2,status:'available',x:62,y:22,
+   conn:[{id:'C3',t:'Type 2',kw:22,st:'free'},{id:'C4',t:'Type 2',kw:22,st:'free'}]},
+  {id:'ST-003',name:'Highway Fast Charge',addr:'NH-48, Exit 12, Mumbai',dist:'3.9 km',rate:24,rating:4.8,status:'available',x:70,y:62,
+   conn:[{id:'C5',t:'CCS2',kw:120,st:'free'},{id:'C6',t:'CCS2',kw:120,st:'offline'}]},
+  {id:'ST-004',name:'Riverside Parking',addr:'Riverside Road 3, Nagpur',dist:'2.4 km',rate:17,rating:3.9,status:'busy',x:40,y:70,
+   conn:[{id:'C7',t:'Type 2',kw:22,st:'charging'},{id:'C8',t:'Type 2',kw:22,st:'charging'}]},
+  {id:'ST-005',name:'City Hall Street Charger',addr:'City Hall Plaza, Pune',dist:'4.5 km',rate:19,rating:4.1,status:'offline',x:14,y:58,
+   conn:[{id:'C9',t:'Type 2',kw:11,st:'offline'}]}
+];
+const TAX = {IN:{name:'GST',rate:0.18,cur:'INR'},EU:{name:'VAT',rate:0.20,cur:'EUR'},US:{name:'Sales tax',rate:0.08,cur:'USD'}};
+const TXNS = [
+  {d:'Today 09:22',t:'Wallet top-up (UPI)',a:'+₹1,500.00',s:'topupOK'},
+  {d:'Today 09:40',t:'Wallet top-up (card)',a:'+₹860.00',s:'failed'},
+  {d:'Yesterday',t:'Charging - Phoenix Mall',a:'-₹228.00',s:'deducted'}
+];
+const SESSIONS = [
+  {d:'17 Jun 2026, 09:22',st:'Phoenix Mall Charger',kwh:15,amt:'₹228.00',ref:'TX-88120'},
+  {d:'18 Jun 2026, 15:10',st:'Highway Fast Charge',kwh:25,amt:'₹720.00',ref:'TX-88174'}
+];
+const NOTIFS = [
+  {t:'Charging complete',b:'Phoenix Mall Charger: 15.0 kWh, ₹228.00. Receipt ready.',when:'2 h ago'},
+  {t:'Low wallet balance',b:'Your balance is below ₹500. Top up to keep charging.',when:'Yesterday'},
+  {t:'Ticket update',b:'TKT-10452 (faulty connector) is assigned to a technician.',when:'Yesterday'}
+];
+
+// ---------- state ----------
+const S = {tab:'customer', client:'a', cs:'login', lang:'en', stationId:null, connId:null, target:10, session:null, ticket:null,
+  ad:'dash', adhocStep:'scan', wallet:1500, toggles:{push:true,email:true,sms:false,marketing:false}, consent:false, res:{day:'today',time:'12:00'}, payMode:'upi' };
+let timer = null;
+
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+function setTab(tb){ S.tab=tb; render(); }
+function go(s){ S.cs=s; render(); }
+function toast(msg){ const el=document.getElementById('toast'); if(!el) return; el.textContent=msg; el.style.display='block'; setTimeout(()=>{el.style.display='none'},1800); }
+function stById(id){ return STATIONS.find(x=>x.id===id); }
+function connById(st,cid){ return st.conn.find(c=>c.id===cid); }
+function statusPill(s){
+  const m={available:['ok',t('available')],free:['ok',t('available')],charging:['warn',t('charging')],busy:['warn',t('busy')],offline:['gray',t('offline')],faulted:['bad',t('faulted')]};
+  const x=m[s]||['gray',s]; return `<span class="pill ${x[0]}">${x[1]}</span>`;
+}
+function langBar(){
+  return `<div class="langbar">${brand().langs.map(k=>`<span class="chip ${S.lang===k?'on':''}" onclick="S.lang='${k}';render()">${LANG_NAMES[k]}</span>`).join('')}</div>`;
+}
+
+function phoneShell(inner, nav){
+  const navHTML = nav ? `<div class="nav">
+    <button class="${nav==='explore'?'on':''}" onclick="go('home')">&#9737;<span>${t('explore')}</span></button>
+    ${brand().features.wallet?`<button class="${nav==='wallet'?'on':''}" onclick="go('wallet')">&#9636;<span>${t('wallet')}</span></button>`:''}
+    <button class="${nav==='alerts'?'on':''}" onclick="go('notifs')">&#9650;<span>${t('alerts')}</span></button>
+    <button class="${nav==='profile'?'on':''}" onclick="go('profile')">&#9787;<span>${t('profile')}</span></button>
+  </div>` : '';
+  return `<div class="phone"><div class="screen">
+    <div class="sbar"><span>9:41</span><span>5G &nbsp;100%</span></div>
+    <div class="sbody">${inner}</div>${navHTML}
+    <div id="toast" class="toast"></div></div></div>`;
+}
+
+// ---------- customer app screens ----------
+function custScreen(){
+  const s = S.cs;
+  if(s==='login') return phoneShell(`${langBar()}
+    ${brandHead()}<div class="hdr" style="margin-top:14px">${t('login')}</div>
+    <p class="mute">${t('loginSub')}</p>
+    <label>${t('countryCode')}</label><select><option>+91 India</option><option>+1 USA</option><option>+44 UK</option></select>
+    <label>${t('mobile')}</label><input value="98765 43210">
+    <button class="btn" onclick="go('otp')">${t('sendCode')}</button>`);
+  if(s==='otp') return phoneShell(`${langBar()}
+    <div class="hdr">${t('enterCode')}</div><p class="mute">${t('sentTo')} +91 98765 43210</p>
+    <div style="display:flex;gap:8px;margin-top:14px">${[1,2,3,4,5,6].map(i=>`<input style="text-align:center;font-size:20px" maxlength="1" value="${i}">`).join('')}</div>
+    <button class="btn" onclick="go('consent')">${t('verify')}</button>
+    <p class="mute" style="text-align:center;margin-top:10px">${t('resend')}</p>`);
+  if(s==='consent') return phoneShell(`
+    <div class="hdr">${t('privacyTitle')}</div>
+    <div class="card"><div class="row"><span>${t('acceptTerms')}</span><span class="tog ${S.consent?'on':''}" onclick="S.consent=!S.consent;render()"></span></div>
+    <div class="row"><span>${t('consentBilling')}</span><span class="tog on"></span></div>
+    <div class="row"><span>${t('marketingOffers')}</span><span class="tog ${S.toggles.marketing?'on':''}" onclick="S.toggles.marketing=!S.toggles.marketing;render()"></span></div></div>
+    <p class="mute">${t('consentNote')}</p>
+    <button class="btn" ${S.consent?'':'disabled'} onclick="go('home')">${t('continue')}</button>`);
+  if(s==='home') return phoneShell(homeHTML(), 'explore');
+  if(s==='station') return phoneShell(stationHTML(), null);
+  if(s==='precharge') return phoneShell(preHTML(), null);
+  if(s==='live') return phoneShell(liveHTML(), null);
+  if(s==='receipt') return phoneShell(receiptHTML(), null);
+  if(s==='wallet') return phoneShell(walletHTML(), 'wallet');
+  if(s==='history') return phoneShell(historyHTML(), 'profile');
+  if(s==='reserve') return phoneShell(reserveHTML(), null);
+  if(s==='fault') return phoneShell(faultHTML(), null);
+  if(s==='notifs') return phoneShell(notifsHTML(), 'alerts');
+  if(s==='profile') return phoneShell(profileHTML(), 'profile');
+  if(s==='rfid') return phoneShell(simpleHTML(t('rfidCards'),`<div class="card"><div class="row"><div><b>Card 4F:A1:22:90</b><div class="mute">${t('active')} · Personal wallet</div></div><span class="pill ok">${t('active')}</span></div></div><button class="btn ghost" onclick="toast('Card added (prototype)')">${t('addCard')}</button>`,'profile'),'profile');
+  if(s==='vehicles') return phoneShell(simpleHTML(t('vehiclesTitle'),`<div class="card"><b>Hyundai Kona EV</b><div class="mute">Type 2 · 100 kW · MH12 AB 1234</div></div><button class="btn ghost" onclick="toast('Vehicle added (prototype)')">${t('addVehicle')}</button>`,'profile'),'profile');
+  return phoneShell('<p>Screen not found</p>', null);
+}
+function simpleHTML(title, body){ return `<div class="hdr"><button class="back" onclick="go('profile')">&#8592;</button>${title}</div>${body}`; }
+
+function homeHTML(){
+  const pins = STATIONS.map(st=>{
+    const cls = st.status==='offline'?'off':st.status==='busy'?'busy':'';
+    return `<button class="pin ${cls}" style="left:${st.x}%;top:${st.y}%" onclick="S.stationId='${st.id}';go('station')">${st.dist}</button>`;
+  }).join('');
+  const list = STATIONS.map(st=>`<div class="row" onclick="S.stationId='${st.id}';go('station')" style="cursor:pointer"><div><b>${st.name}</b><div class="mute">${st.dist} · ${inr(st.rate)} ${t('perKwh')} · ★ ${st.rating}</div></div>${statusPill(st.status)}</div>`).join('');
+  return `${brandHead()}<div class="hdr">${t('findCharger')}</div>
+   <input placeholder="${t('searchPh')}" />
+   <div class="map" style="margin-top:12px">
+     <svg width="100%" height="100%" style="position:absolute;inset:0" preserveAspectRatio="none">
+       <path d="M0 120 Q120 90 240 130 T420 110" stroke="#fff" stroke-width="10" fill="none"/>
+       <path d="M60 0 L140 300" stroke="#fff" stroke-width="8" fill="none"/>
+       <path d="M0 230 L400 200" stroke="#fff" stroke-width="7" fill="none"/>
+       <rect x="200" y="20" width="90" height="60" fill="#d3e4cf"/>
+     </svg>${pins}
+   </div>
+   <div class="row" style="margin-top:10px"><b>${t('nearby')} (${STATIONS.length})</b><button class="btn sm ghost" onclick="toast('${t('filterStub')}')">${t('filter')}</button></div>
+   ${list}
+   <div class="card" style="margin-top:8px"><b>${t('qrTitle')}</b><div class="mute">${t('qrSub')}</div>
+   <button class="btn sm" onclick="setTab('adhoc')">${t('tryAdhoc')}</button></div>`;
+}
+
+function stationHTML(){
+  const st = stById(S.stationId);
+  const conns = st.conn.map(c=>`<div class="row" onclick="S.connId='${c.id}';render()" style="cursor:pointer"><div><b>${c.t} · ${c.kw} kW</b><div class="mute">${t('connector')} ${c.id}</div></div>${statusPill(c.st)}</div>`).join('');
+  const sel = S.connId && connById(st,S.connId);
+  const canCharge = sel && sel.st==='free';
+  return `<div class="hdr"><button class="back" onclick="go('home')">&#8592;</button>${st.name}</div>
+   <div class="mute">${st.addr} · ★ ${st.rating} · ${t('open24')}</div>
+   <div class="card" style="margin-top:10px"><div class="row"><span>${t('price')}</span><b>${inr(st.rate)} ${t('perKwh')}</b></div><div class="row"><span>${t('status')}</span>${statusPill(st.status)}</div></div>
+   <b>${t('connectors')}</b>${conns}
+   <div class="flow" style="margin-top:8px"><button class="btn sm ghost" onclick="toast('${t('navigate')} (prototype)')">${t('navigate')}</button><button class="btn sm ghost" onclick="toast('${t('save')} (prototype)')">&#9825; ${t('save')}</button><button class="btn sm ghost" onclick="toast('${t('share')} (prototype)')">${t('share')}</button></div>
+   <button class="btn" ${canCharge?'':'disabled'} onclick="go('precharge')">${t('chargeHere')}</button>
+   ${brand().features.reservations?`<button class="btn ghost" onclick="go('reserve')">${t('reserveSlot')}</button>`:''}
+   ${brand().features.faults?`<button class="btn ghost" onclick="go('fault')">${t('reportFault')}</button>`:''}`;
+}
+
+function preHTML(){
+  const st = stById(S.stationId), c = connById(st,S.connId) || st.conn[0];
+  const kwh = S.target; const energy = kwh*st.rate; const tax = energy*TAX.IN.rate; const total = energy+tax;
+  return `<div class="hdr"><button class="back" onclick="go('station')">&#8592;</button>${t('confirmCharging')}</div>
+   <div class="card"><div class="row"><span>${t('station')}</span><b>${st.name}</b></div><div class="row"><span>${t('connector')}</span><b>${c.t} · ${c.kw} kW</b></div></div>
+   <b>${t('howMuch')}</b>
+   <div style="margin-top:6px">${[10,20,30].map(k=>`<span class="chip ${S.target===k?'on':''}" onclick="S.target=${k};render()">${k} kWh</span>`).join('')}</div>
+   <div class="card" style="margin-top:12px">
+     <div class="row"><span>${t('energy')} (${kwh} kWh × ${inr(st.rate)})</span><span>${inr(energy)}</span></div>
+     <div class="row"><span>${t('taxLabel')} (${TAX.IN.rate*100}%)</span><span>${inr(tax)}</span></div>
+     <div class="row"><b>${t('estTotal')}</b><b>${inr(total)}</b></div>
+     <div class="mute" style="margin-top:6px">${t('holdNote').replace('{x}', inr(total+20))}</div>
+   </div>
+   <div class="card"><div class="row"><span>${t('payFrom')}</span><b>${t('wallet')} · ${inr(S.wallet)}</b></div></div>
+   <button class="btn" onclick="startSession()">${t('confirmStart')}</button>`;
+}
+
+function startSession(){
+  const st = stById(S.stationId);
+  S.session = {kwh:0, target:S.target, rate:st.rate, sec:0, station:st.name, running:true};
+  if(timer) clearInterval(timer);
+  timer = setInterval(()=>{ if(!S.session||!S.session.running) return;
+    S.session.sec++; S.session.kwh = Math.min(S.session.target, S.session.kwh+0.25);
+    if(S.session.kwh>=S.session.target){ S.session.running=false; clearInterval(timer); toast(t('chargingComplete')); if(S.tab==='adhoc') S.adhocStep='done'; go('receipt'); return; }
+    if(S.cs==='live') render(); }, 500);
+  go('live');
+}
+
+function liveHTML(){
+  const se = S.session; const pct = Math.round(Math.min(100,(se.kwh/se.target)*100));
+  const amt = inr(se.kwh*se.rate*(1+TAX.IN.rate));
+  const mm = String(Math.floor(se.sec/60)), ss = String(se.sec%60).padStart(2,'0');
+  const dash = 2*Math.PI*88;
+  return `<div class="hdr">${t('charging')} <span style="margin-left:auto" class="pill info">${t('liveNow')}</span></div>
+   <div class="mute">${t('chargingAt')} ${se.station}</div>
+   <div class="ring"><svg width="200" height="200"><circle cx="100" cy="100" r="88" stroke="#e7edf6" stroke-width="14" fill="none"/>
+     <circle cx="100" cy="100" r="88" stroke="#14a86b" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="${dash}" stroke-dashoffset="${dash*(1-pct/100)}" transform="rotate(-90 100 100)"/></svg>
+     <div class="c"><div class="big">${pct}%</div><div><b>${se.kwh.toFixed(2)} kWh</b></div></div></div>
+   <div class="card"><div class="row"><span>${t('elapsed')}</span><b>${mm}:${ss}</b></div><div class="row"><span>${t('estCost')}</span><b>${amt}</b></div><div class="row"><span>${t('target')}</span><b>${se.target} kWh</b></div></div>
+   <div class="card"><div class="row"><span>${t('connector')}</span>${statusPill('charging')}</div></div>
+   <button class="btn red" onclick="stopSession()">${t('stopCharging')}</button>
+   <button class="btn ghost" onclick="go('fault')">${t('somethingWrong')}</button>`;
+}
+function stopSession(){ if(S.session) S.session.running=false; if(timer) clearInterval(timer); go('receipt'); }
+
+function receiptHTML(){
+  const se = S.session || {kwh:0,rate:17,station:'Phoenix Mall Charger',sec:0};
+  const energy = se.kwh*se.rate, tax = energy*TAX.IN.rate, total=energy+tax;
+  return `<div class="hdr">${t('chargingComplete')}</div>
+   <div class="card" style="text-align:center"><div class="big" style="font-size:28px">${inr(total)}</div><div class="mute">${t('paidWallet')} · TX-${Math.floor(90000+Math.random()*9000)}</div></div>
+   <div class="card"><div class="row"><span>${t('station')}</span><b>${se.station}</b></div><div class="row"><span>${t('energy')}</span><b>${se.kwh.toFixed(2)} kWh</b></div>
+   <div class="row"><span>${t('duration')}</span><b>${Math.floor(se.sec/60)} min</b></div><div class="row"><span>${t('energyCharge')}</span><span>${inr(energy)}</span></div>
+   <div class="row"><span>${t('taxLabel')} ${TAX.IN.rate*100}%</span><span>${inr(tax)}</span></div></div>
+   <button class="btn" onclick="toast('${t('download')} (prototype)')">${t('download')}</button>
+   <button class="btn ghost" onclick="go('home')">${t('done')}</button>`;
+}
+
+function walletHTML(){
+  return `<div class="hdr">${t('wallet')}</div>
+   <div class="card" style="text-align:center"><div class="mute">${t('availableSpend')}</div><div class="big" style="font-size:28px;color:var(--ink)">${inr(S.wallet)}</div>
+   <div class="flow" style="justify-content:center;margin-top:10px"><button class="btn sm" onclick="S.wallet+=500;toast('+₹500 (prototype)');render()">+ ₹500</button><button class="btn sm" onclick="S.wallet+=1000;toast('+₹1,000 (prototype)');render()">+ ₹1,000</button></div></div>
+   <b>${t('transactions')}</b>
+   ${TXNS.map(x=>`<div class="row"><div><b>${x.t}</b><div class="mute">${x.d}</div></div><div style="text-align:right"><b>${x.a}</b><div class="mute">${t(x.s)}</div></div></div>`).join('')}
+   <button class="btn ghost" onclick="go('history')">${t('chargingHistory')}</button>
+   <button class="btn ghost" onclick="toast('${t('paymentMethods')} (prototype)')">${t('paymentMethods')}: UPI · ${t('card')} · ${t('netbanking')}</button>`;
+}
+
+function historyHTML(){
+  const hs=[30,55,80,45,65,90,40], ds=['M','T','W','T','F','S','S'];
+  return simpleHTML(t('chargingHistory'), `<div class="card"><div class="mute">${t('last30')}</div><b>${t('avg20')}</b>
+   <div class="bars" style="margin-top:14px">${hs.map((h,i)=>`<div style="height:${h}%"><span>${ds[i]}</span></div>`).join('')}</div></div>
+   ${SESSIONS.map(x=>`<div class="card"><div class="row"><div><b>${x.st}</b><div class="mute">${x.d}</div></div><div style="text-align:right"><b>${x.amt}</b><div class="mute">${x.kwh} kWh</div></div></div><button class="btn sm ghost" onclick="toast('${t('download')}: ${x.ref} (prototype)')">${t('download')} ${x.ref}</button></div>`).join('')}`);
+}
+
+function reserveHTML(){
+  const st = stById(S.stationId) || STATIONS[0];
+  return simpleHTML(t('reserveTitle'), `<div class="mute">${st.name}</div>
+   <div style="margin-top:8px">${[['today',t('today')],['tomorrow',t('tomorrow')]].map(([k,l])=>`<span class="chip ${S.res.day===k?'on':''}" onclick="S.res.day='${k}';render()">${l}</span>`).join('')}</div>
+   <label>${t('startTime')}</label><select onchange="S.res.time=this.value">${['12:00','13:00','14:00','15:00'].map(x=>`<option ${S.res.time===x?'selected':''}>${x}</option>`).join('')}</select>
+   <label>${t('durationLbl')}</label><select><option>30 min</option><option>1 h</option></select>
+   <div class="card" style="margin-top:12px"><div class="row"><span>${t('reserveFee')}</span><span>₹20 (${t('refundable')})</span></div><div class="row"><span>${t('payFrom')}</span><b>${t('wallet')}</b></div></div>
+   <button class="btn" onclick="toast('${t('confirmReservation')} (prototype)');go('station')">${t('confirmReservation')}</button>`);
+}
+
+function faultHTML(){
+  if(S.ticket) return simpleHTML(t('reportTitle'), `<div class="card" style="text-align:center"><div class="big" style="font-size:22px">${S.ticket}</div><div class="mute">${t('ticketThanks')}</div><div style="margin-top:10px"><span class="pill warn">${t('assigned')}</span></div></div>
+   <div class="card"><div class="row"><span>${t('status')}</span><b>${t('assignedTech')}</b></div><div class="row"><span>${t('nextUpdate')}</span><b>${t('within2')}</b></div></div>
+   <button class="btn ghost" onclick="go('home')">${t('backMap')}</button>`);
+  const st = stById(S.stationId) || STATIONS[0];
+  return simpleHTML(t('reportTitle'), `<div class="mute">${st.name}</div>
+   <label>${t('whatWrong')}</label><select><option>Charger not starting</option><option>Connector damaged</option><option>Screen not working</option><option>Payment failed</option><option>Other</option></select>
+   <label>${t('describe')}</label><textarea rows="3" placeholder="..."></textarea>
+   <label>${t('photo')}</label><button class="btn ghost" onclick="toast('${t('addPhoto')} (prototype)')">${t('addPhoto')}</button>
+   <button class="btn" onclick="S.ticket='TKT-10452';render()">${t('submitReport')}</button>`);
+}
+
+function notifsHTML(){
+  return `<div class="hdr">${t('alertsTitle')}</div>
+   ${NOTIFS.map(n=>`<div class="card"><b>${n.t}</b><div class="mute">${n.b}</div><div class="mute" style="margin-top:4px">${n.when}</div></div>`).join('')}`;
+}
+
+function profileHTML(){
+  const tg = (k)=>`<span class="tog ${S.toggles[k]?'on':''}" onclick="S.toggles.${k}=!S.toggles.${k};render()"></span>`;
+  return `<div class="hdr">${t('profileTitle')}</div>
+   <div class="card"><b>Priya Sharma</b><div class="mute">+91 98765 43210</div></div>
+   <div class="card" style="padding:4px 12px">
+     <div class="row" style="cursor:pointer" onclick="go('vehicles')"><span>${t('yourVehicles')}</span><span>›</span></div>
+     <div class="row" style="cursor:pointer" onclick="go('rfid')"><span>${t('rfidCards')}</span><span>›</span></div>
+     <div class="row" style="cursor:pointer" onclick="go('history')"><span>${t('chargingHistory')}</span><span>›</span></div>
+     ${brand().features.wallet?`<div class="row" style="cursor:pointer" onclick="go('wallet')"><span>${t('wallet')}</span><span>›</span></div>`:''}
+   </div>
+   <div class="card" style="padding:4px 12px">
+     <div class="row"><span>${t('pushN')}</span>${tg('push')}</div>
+     <div class="row"><span>${t('emailR')}</span>${tg('email')}</div>
+     <div class="row"><span>${t('smsA')}</span>${tg('sms')}</div>
+     <div class="row"><span>${t('marketingOffers')}</span>${tg('marketing')}</div>
+   </div>
+   <b>${t('language')}</b>
+   <div style="margin:6px 0 10px">${brand().langs.map(k=>`<span class="chip ${S.lang===k?'on':''}" onclick="S.lang='${k}';render()">${LANG_NAMES[k]}</span>`).join('')}</div>
+   <div class="card" style="padding:4px 12px"><div class="row" style="cursor:pointer" onclick="toast('${t('privacyData')} (prototype)')"><span>${t('privacyData')}</span><span>›</span></div>
+   <div class="row" style="cursor:pointer" onclick="toast('${t('helpSupport')} (prototype)')"><span>${t('helpSupport')}</span><span>›</span></div></div>
+   <button class="btn ghost" onclick="go('login')">${t('logout')}</button>`;
+}
+
+// ---------- ad-hoc web charging ----------
+function adhocHTML(){
+  const st = STATIONS[0];
+  const wrap = (inner)=>`<div style="max-width:420px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid var(--line);padding:18px;min-height:600px">
+     <div class="row" style="border:0"><b>EV Charging · Web</b><span class="mute">yourbrand.web.app</span></div>${langBar()}${inner}</div>`;
+  const step = S.adhocStep;
+  if(step==='scan') return wrap(`<div class="hdr" style="margin-top:10px">${t('scanTitle')}</div>
+    <p class="mute">${t('scanSub')}</p>
+    <div class="card" style="text-align:center;height:200px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#f4f7fb,#f4f7fb 10px,#eaf0f8 10px,#eaf0f8 20px)"><b>[ QR ]</b></div>
+    <button class="btn" onclick="S.adhocStep='station';S.stationId='ST-001';render()">${t('simulateScan')}: ${st.name}</button>`);
+  if(step==='station') return wrap(`<div class="hdr">${st.name}</div><div class="mute">${st.addr}</div>
+    ${st.conn.map(c=>`<div class="row" style="cursor:pointer" onclick="S.connId='${c.id}';S.adhocStep='pay';render()"><div><b>${c.t} · ${c.kw} kW</b></div>${statusPill(c.st)}</div>`).join('')}
+    <div class="card" style="margin-top:12px"><b>${inr(st.rate)} ${t('perKwh')}</b><div class="mute">+ ${t('taxLabel')} ${TAX.IN.rate*100}%</div></div>`);
+  if(step==='pay') return wrap(`<div class="hdr">${t('payStart')}</div>
+    <label>${t('energy')}</label><div style="margin-top:6px">${[10,20].map(k=>`<span class="chip ${S.target===k?'on':''}" onclick="S.target=${k};render()">${k} kWh</span>`).join('')}</div>
+    <label>${t('payFrom')}</label><div style="margin-top:6px">${[['upi',t('upi')],['card',t('card')],['netbanking',t('netbanking')]].map(([k,l])=>`<span class="chip ${S.payMode===k?'on':''}" onclick="S.payMode='${k}';render()">${l}</span>`).join('')}</div>
+    <label>${t('receiptEmail')}</label><input value="priya@example.com">
+    <div class="mute" style="margin-top:6px">${t('payCardNote')}</div>
+    <button class="btn" onclick="S.adhocStep='live';S.stationId='ST-001';startSession();S.adhocStep='live';render()">${t('pay')} ${inr(S.target*st.rate*1.18)} · ${t('payStart')}</button>`);
+  if(step==='live') return wrap(`<div style="transform:scale(.95);transform-origin:top">${liveHTML().replace(/onclick="go\('fault'\)"/,'onclick="toast(\'Fault report (prototype)\')"')}</div>`).replace('onclick="stopSession()"','onclick="stopSession();S.adhocStep=\'done\';render()"');
+  if(step==='done') return wrap(`<div class="hdr" style="margin-top:10px">${t('done')}</div>${receiptHTML().replace(/onclick="go\('home'\)"/,'onclick="S.adhocStep=\'scan\';render()"')}`);
+  return wrap('');
+}
+
+// ---------- admin portal (English) ----------
+const ADMIN_PAGES = [
+  ['Overview',[['dash','Dashboard']]],
+  ['Network',[['stations','Stations & chargers'],['sessions','Live sessions'],['firmware','Firmware updates'],['tickets','Faults & maintenance']]],
+  ['Business',[['tariffs','Tariffs & price history'],['customers','Customers'],['payments','Payments & invoices'],['reports','Reports']]],
+  ['Governance',[['audit','Audit log'],['roles','Roles & permissions'],['privacy','Privacy & tax rules']]]
+];
+function adminPage(){
+  switch(S.ad){
+    case 'dash': return `<h2 style="margin:0 0 12px">Overview</h2>
+      <div class="notice">Prototype figures are sample data. Amounts in ₹.</div>
+      <div class="kpis">
+        <div class="kpi"><span class="mute">Stations</span><b>5</b></div>
+        <div class="kpi"><span class="mute">Chargers online</span><b>8 / 9</b></div>
+        <div class="kpi"><span class="mute">Active sessions</span><b>3</b></div>
+        <div class="kpi"><span class="mute">Revenue today</span><b>₹1,28,400</b></div>
+        <div class="kpi"><span class="mute">Energy today</span><b>612 kWh</b></div>
+        <div class="kpi"><span class="mute">Open faults</span><b>2</b></div>
+        <div class="kpi"><span class="mute">Customers</span><b>3,230</b></div>
+        <div class="kpi"><span class="mute">Uptime (30 d)</span><b>98.7%</b></div>
+      </div>
+      <div class="card"><b>Energy delivered, last 7 days (kWh)</b>
+        <div class="bars" style="margin:18px 0 26px">${[320,410,380,520,480,610,560].map((v,i)=>`<div style="height:${v/7}%"><span>${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}</span></div>`).join('')}</div></div>
+      <div class="card"><b>Alerts</b><div class="row"><span>Charger offline: City Hall Street Charger</span><span class="pill gray">Offline</span></div><div class="row"><span>Ticket TKT-10452: connector damaged</span><span class="pill warn">Assigned</span></div></div>`;
+    case 'stations': return `<h2>Stations & chargers</h2><div class="flow"><button class="btn sm" onclick="toast('Add station form (prototype)')">+ Add station</button><button class="btn sm ghost" onclick="toast('Import CSV (prototype)')">Import CSV</button></div>
+      <table><tr><th>ID</th><th>Name</th><th>Address</th><th>Connectors</th><th>Rate</th><th>Status</th><th>Actions</th></tr>
+      ${STATIONS.map(s=>`<tr><td>${s.id}</td><td>${s.name}</td><td>${s.addr}</td><td>${s.conn.length}</td><td>${inr(s.rate)}/kWh</td><td>${statusPill(s.status)}</td><td><button class="btn sm ghost" onclick="toast('Edit ${s.id} (prototype)')">Edit</button> <button class="btn sm ghost" onclick="toast('Remote restart sent (prototype)')">Restart</button> <button class="btn sm ghost" onclick="toast('OCPP log opened (prototype)')">OCPP log</button></td></tr>`).join('')}</table>
+      <p class="mute">Each charger shows GPS location, connector type, power, OCPP version and communication log.</p>`;
+    case 'sessions': return `<h2>Live sessions</h2><table><tr><th>Session</th><th>Station</th><th>Connector</th><th>Customer</th><th>kWh</th><th>Status</th><th></th></tr>
+      <tr><td>S-7781</td><td>Phoenix Mall</td><td>C2 Type 2</td><td>Priya S.</td><td>12.4</td><td>${statusPill('charging')}</td><td><button class="btn sm red" onclick="toast('Remote stop sent (prototype)')">Stop</button></td></tr>
+      <tr><td>S-7782</td><td>Riverside</td><td>C7 Type 2</td><td>Ravi K.</td><td>6.1</td><td>${statusPill('charging')}</td><td><button class="btn sm red" onclick="toast('Remote stop sent (prototype)')">Stop</button></td></tr>
+      <tr><td>S-7783</td><td>Highway</td><td>C5 CCS2</td><td>Fleet: Acme Logistics</td><td>31.0</td><td>${statusPill('charging')}</td><td><button class="btn sm red" onclick="toast('Remote stop sent (prototype)')">Stop</button></td></tr></table>`;
+    case 'firmware': return `<h2>Firmware updates</h2><div class="notice">Schedule updates for off-peak hours. Chargers in use are skipped and retried.</div>
+      <table><tr><th>Charger</th><th>Current</th><th>Target</th><th>Schedule</th><th>Status</th></tr>
+      <tr><td>C2 Phoenix Mall</td><td>2.1.4</td><td>2.2.0</td><td>Tonight 02:00</td><td><span class="pill info">Scheduled</span></td></tr>
+      <tr><td>C5 Highway</td><td>2.2.0</td><td>2.2.0</td><td>-</td><td><span class="pill ok">Up to date</span></td></tr>
+      <tr><td>C9 City Hall</td><td>1.9.0</td><td>2.2.0</td><td>Retry when online</td><td><span class="pill gray">Charger offline</span></td></tr></table>
+      <div class="flow" style="margin-top:12px"><button class="btn sm" onclick="toast('Update scheduled (prototype)')">Schedule update</button></div>`;
+    case 'tickets': return `<h2>Faults & maintenance</h2><table><tr><th>Ticket</th><th>Station / connector</th><th>Issue</th><th>Priority</th><th>Technician</th><th>Status</th></tr>
+      <tr><td>TKT-10452</td><td>Phoenix Mall / C1</td><td>Connector damaged</td><td><span class="pill bad">High</span></td><td><select style="margin:0;width:150px"><option>Unassigned</option><option selected>Arjun (field)</option><option>Meera (field)</option></select></td><td><span class="pill warn">Assigned</span></td></tr>
+      <tr><td>TKT-10447</td><td>City Hall / C9</td><td>Charger offline</td><td><span class="pill warn">Medium</span></td><td><select style="margin:0;width:150px"><option>Unassigned</option><option>Arjun (field)</option></select></td><td><span class="pill gray">Open</span></td></tr></table>
+      <p class="mute">Customers see the ticket number and status in the app. Preventive maintenance schedules are set per station.</p>`;
+    case 'tariffs': return `<h2>Tariffs & price history</h2><div class="flow"><button class="btn sm" onclick="toast('New tariff (prototype)')">+ New tariff</button><button class="btn sm ghost" onclick="toast('Schedule change (prototype)')">Schedule change</button></div>
+      <table><tr><th>Tariff</th><th>Rate</th><th>Time window</th><th>Idle fee</th><th>Applies to</th></tr>
+      <tr><td>Standard</td><td>₹18 /kWh</td><td>All day</td><td>₹1 /min after 10 min</td><td>All customers</td></tr>
+      <tr><td>Peak</td><td>₹24 /kWh</td><td>17:00-21:00</td><td>₹2 /min after 5 min</td><td>All customers</td></tr>
+      <tr><td>Fleet</td><td>₹14 /kWh</td><td>All day</td><td>-</td><td>Acme Logistics only</td></tr></table>
+      <b style="display:block;margin:18px 0 6px">Price-change history</b>
+      <table><tr><th>When</th><th>Who</th><th>Tariff</th><th>Change</th></tr>
+      <tr><td>12 Nov 2026 10:05</td><td>Admin: Sneha</td><td>Peak</td><td>₹23 → ₹24 /kWh</td></tr>
+      <tr><td>01 Oct 2026 09:00</td><td>Admin: Sneha</td><td>Standard</td><td>₹16 → ₹18 /kWh</td></tr></table>`;
+    case 'customers': return `<h2>Customers</h2><table><tr><th>Name</th><th>Phone</th><th>Wallet</th><th>Sessions</th><th>Status</th><th></th></tr>
+      <tr><td>Priya Sharma</td><td>+91 98765 43210</td><td>₹1,500.00</td><td>42</td><td>${statusPill('available')}</td><td><button class="btn sm ghost" onclick="toast('Customer record (prototype)')">View</button> <button class="btn sm ghost" onclick="toast('Account deactivated (prototype)')">Deactivate</button></td></tr>
+      <tr><td>Ravi Kumar</td><td>+91 91234 56780</td><td>₹124.00</td><td>7</td><td>${statusPill('available')}</td><td><button class="btn sm ghost">View</button></td></tr></table>`;
+    case 'payments': return `<h2>Payments & invoices</h2><table><tr><th>Txn</th><th>Customer</th><th>Method</th><th>Amount</th><th>Gateway status</th><th>Invoice</th><th></th></tr>
+      <tr><td>TX-88120</td><td>Priya S.</td><td>UPI</td><td>₹228.00</td><td><span class="pill ok">Captured</span></td><td>INV-4401</td><td><button class="btn sm ghost" onclick="toast('Refund request (prototype)')">Refund</button></td></tr>
+      <tr><td>TX-88121</td><td>Ravi K.</td><td>Card</td><td>₹860.00</td><td><span class="pill bad">Failed</span></td><td>-</td><td><button class="btn sm ghost" onclick="toast('Retry payment (prototype)')">Retry</button></td></tr></table>
+      <p class="mute">Gateway: ${brand().gateway}. Reconcile daily. GST is shown on every invoice.</p>`;
+    case 'reports': return `<h2>Reports</h2><table><tr><th>Report</th><th>Period</th><th>Format</th><th></th></tr>
+      ${['Charging sessions','Station utilisation','Revenue (GST-wise)','Customer activity','Energy consumption','Charger uptime','Payment reconciliation','Government compliance (sessions and charger status)'].map(r=>`<tr><td>${r}</td><td>Last 30 days</td><td>CSV, PDF</td><td><button class="btn sm" onclick="toast('Exported: ${r} (prototype)')">Export</button></td></tr>`).join('')}</table>`;
+    case 'audit': return `<h2>Audit log</h2><table><tr><th>Time</th><th>User</th><th>Action</th><th>Object</th></tr>
+      <tr><td>12 Nov 10:05</td><td>Sneha (Admin)</td><td>Changed tariff</td><td>Peak</td></tr>
+      <tr><td>12 Nov 09:40</td><td>Arjun (Technician)</td><td>Closed ticket</td><td>TKT-10440</td></tr>
+      <tr><td>11 Nov 18:12</td><td>Sneha (Admin)</td><td>Deactivated account</td><td>Customer 1182</td></tr></table>`;
+    case 'roles': return `<h2>Roles & permissions</h2><table><tr><th>Permission</th><th>Super admin</th><th>Operations</th><th>Technician</th><th>Finance</th></tr>
+      ${['View dashboard','Edit stations','Change tariffs','Manage tickets','Issue refunds','Schedule firmware','Export reports'].map((p,i)=>`<tr><td>${p}</td>${[1,1,i%2===0?1:0,i===3||i===0?1:0].map(v=>`<td>${v?'✓':'-'}</td>`).join('')}</tr>`).join('')}</table>
+      <p class="mute">Role-based access control. Partners see only their own stations (prototype).</p>`;
+    case 'privacy': return `<h2>Privacy & tax rules</h2>
+      <div class="card"><b>Tax per country (applied on invoices)</b>
+      <table style="margin-top:8px"><tr><th>Country</th><th>Tax</th><th>Rate</th><th>Currency</th></tr>
+      <tr><td>India</td><td>${TAX.IN.name}</td><td>${TAX.IN.rate*100}%</td><td>${TAX.IN.cur}</td></tr>
+      <tr><td>EU</td><td>${TAX.EU.name}</td><td>${TAX.EU.rate*100}%</td><td>${TAX.EU.cur}</td></tr>
+      <tr><td>USA</td><td>${TAX.US.name}</td><td>${TAX.US.rate*100}%</td><td>${TAX.US.cur}</td></tr></table></div>
+      <div class="card"><b>Data privacy (India)</b><div class="mute">Consent is recorded at sign-up and can be changed in the app, in line with India's Digital Personal Data Protection Act, 2023. Data retention, export, deletion and grievance handling are managed here. Confirm the exact obligations with the client's legal advisers before launch.</div></div>`;
+  }
+  return '';
+}
+function adminHTML(){
+  return `<div class="admin"><div class="side"><div style="font-weight:800;color:#fff;padding:6px 12px 10px">&#9889; ${brand().name}</div>
+    ${ADMIN_PAGES.map(([g,items])=>`<h4>${g}</h4>${items.map(([k,l])=>`<button class="${S.ad===k?'on':''}" onclick="S.ad='${k}';render()">${l}</button>`).join('')}`).join('')}
+    </div><div class="main">${adminPage()}</div></div>`;
+}
+
+// ---------- render ----------
+function render(){
+  const b = brand();
+  document.documentElement.style.setProperty('--blue', b.color);
+  document.documentElement.style.setProperty('--green', b.accent);
+  if(!b.langs.includes(S.lang)) S.lang = b.langs[0];
+  $('clientSel').innerHTML = Object.keys(CLIENTS).map(k=>`<option value="${k}" ${k===S.client?'selected':''}>${CLIENTS[k].name}</option>`).join('');
+  ['customer','adhoc','admin'].forEach(tb=>{ const b=$('t-'+tb); if(b) b.classList.toggle('on', S.tab===tb); });
+  let html='';
+  if(S.tab==='customer') html = custScreen();
+  else if(S.tab==='adhoc') html = `<div style="width:100%">${adhocHTML()}</div>`;
+  else html = adminHTML();
+  $('app').innerHTML = html;
+}
+render();
+</script>
+</body>
+</html>
