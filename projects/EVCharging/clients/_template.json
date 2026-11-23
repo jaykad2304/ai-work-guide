@@ -1,0 +1,15 @@
+{
+  "clientId": "REPLACE_ME_lowercase_id",
+  "displayName": "REPLACE_ME Client Name EV",
+  "mark": "REPLACE_ME_one_letter",
+  "primaryColor": "#0a6cff",
+  "accentColor": "#14a86b",
+  "languages": ["en"],
+  "defaultLanguage": "en",
+  "country": "IN",
+  "currency": "INR",
+  "gstRate": 0.18,
+  "gatewayName": "Razorpay",
+  "features": {"wallet": true, "reservations": true, "faults": true},
+  "supportEmail": "REPLACE_ME@example.com"
+}

@@ -1,0 +1,15 @@
+{
+  "clientId": "client-a",
+  "displayName": "Client A EV",
+  "mark": "A",
+  "primaryColor": "#0a6cff",
+  "accentColor": "#14a86b",
+  "languages": ["en", "hi", "mr"],
+  "defaultLanguage": "en",
+  "country": "IN",
+  "currency": "INR",
+  "gstRate": 0.18,
+  "gatewayName": "Razorpay",
+  "features": {"wallet": true, "reservations": true, "faults": true},
+  "supportEmail": "support@example.com"
+}
